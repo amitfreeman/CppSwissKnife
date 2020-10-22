@@ -41,11 +41,12 @@ public:
 }; 
   
 /* Template passing multiple arguments */
-template<class T, class U, class Z>
+//template<class T, class U, class Z>
+template<class T, class U>
 class A{
     T x;
     U y;
-    Z z;
+    //Z z;
     
   public:
      A(T ix, U iy)
