@@ -1,3 +1,8 @@
+/* This file contains demo for STL
+ * vector, set and map, their usage and key features
+ * and one demo to find point in set of range , to demonstrate power of STL
+ */
+
 #include <bits/stdc++.h>  //all header files
 //#include <iostream>
 
