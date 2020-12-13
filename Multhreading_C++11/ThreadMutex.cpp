@@ -30,6 +30,7 @@ void addMoney(){
 		if(m.try_lock()){
 			++counter;
 			cout<<"\nI incremented counter now"<<endl;
+			this_thread::sleep_for( chrono::milliseconds(10) );
 			m.unlock();
 		}
 		else{
