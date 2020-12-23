@@ -54,6 +54,16 @@ void postorderTraversal(node* root){
 	cout<<root->item<<" -> ";
 }
 
+/* post order used, as to delete root node at last */
+void deleteTree(node* root){
+	if(root==NULL)
+		return;
+
+	deleteTree(root->left);
+	deleteTree(root->right);
+	delete root;
+}
+
 int main() {
 	cout << "---Starting, creating nodes---" << endl;
 
@@ -71,6 +81,10 @@ int main() {
 
 	cout << "\nPostorder traversal ";
 	postorderTraversal(root);
+	
+	/* delete tree nodes */
+	cout<<"\nDeleting Tree"<<endl;
+	deleteTree(root);
 
 	return 0;
 }
