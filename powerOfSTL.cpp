@@ -1,10 +1,10 @@
-/* This file contains demo for STL
- * vector, set and map, their usage and key features
- * and one demo to find point in set of range , to demonstrate power of STL
- */
-
 #include <bits/stdc++.h>  //all header files
-//#include <iostream>
+/*#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <set>
+#include <imits>*/
+
 
 using namespace std;
 
@@ -15,6 +15,9 @@ bool rev_func(int x, int y){
 void vectorDemo();
 void setDemo();
 void mapDemo();
+void queueDemo();
+void stackDemo();
+void dequeDemo();
 void powerOfStl(); //problem sovling
 
 int main()
@@ -30,7 +33,16 @@ int main()
    cout<<"\n\n--- 3. MAP DEMO ----" <<endl;
    mapDemo();
    
-   cout<<"\n\n--- 3. power of STL ----" <<endl;
+   cout<<"\n\n--- 4. QUEUE DEMO ----" <<endl;
+   queueDemo();
+   
+   cout<<"\n\n--- 5. STACK DEMO ----" <<endl;
+   stackDemo();
+   
+   cout<<"\n\n--- 6. DEQUE DEMO ----" <<endl;
+   dequeDemo();
+  
+   cout<<"\n\n--- 7. power of STL ----" <<endl;
    cout<<"given the set of pair-range like {2,9} {10,30} {30,400} {401, 450}" <<endl;
    cout<<"find if input num belongs in any of range" <<endl;
    powerOfStl();
@@ -38,6 +50,7 @@ int main()
    return 0;
 }
 
+/**  Vector demo **/
 void vectorDemo(){
    vector<int> v={11, 2, 23, 4}; //declare & define vector
    cout<< "v[1] : " << v[1] << endl; 
@@ -95,6 +108,7 @@ void vectorDemo(){
    
 }
 
+/**  Set demo **/
 void setDemo(){
     set<int> s={2,3,1};
     s.insert(3);
@@ -140,6 +154,7 @@ void setDemo(){
     
 }
 
+/**  Map demo **/
 void mapDemo(){
    map<int, int> m;
    m[1]=100;
@@ -157,6 +172,10 @@ void mapDemo(){
    m.erase(2);
    cout<<endl<< "m[2] : "<< m[2];
    
+   cout<<"lower_bound"<<endl;
+   auto pair = m.upper_bound(2);
+   cout<<pair->first<<" "<<pair->second<<endl;
+   
    cout<<"\n\nprinting occurence of chars in string - bazzinga"<<endl;
    map<char,int> mc;
    string str="bazzinga";
@@ -169,6 +188,7 @@ void mapDemo(){
        cout<<it->first <<":\t"<< it->second <<endl;
    }
    
+
    //stringstream - stream of strings
    cout<<"\nusing stringstream to count frequency of strings in stream"<<endl;
    map<string, int> ms;
@@ -184,9 +204,11 @@ void mapDemo(){
    for(auto it=ms.begin(); it!=ms.end(); it++){
        cout<<it->first <<":\t"<< it->second <<endl;
    }
+   
+
 }
 
-
+/* power of STL */
 void  powerOfStl(){
     set< pair<int,int> > s;
     s.insert( {401, 450} );
@@ -219,4 +241,70 @@ void  powerOfStl(){
     else{
          cout<<"not present"<<endl;
     }
+}
+
+/** queue demo **/
+void queueDemo(){
+    cout<<"Creating queue, pushing element"<<endl;
+    queue<int> q;
+    q.push(10);
+    q.push(20);
+    q.push(30);
+    q.push(40);
+    
+    cout<<"q size="<<q.size()<<endl;
+    
+    while(!q.empty()){
+        cout<<"Front is "<<q.front()<<", ";
+        q.pop();  //pops from front
+    }
+    
+    cout<<"\nq size now="<<q.size()<<endl;
+}
+
+/** stack demo **/
+void stackDemo(){
+    cout<<"Creating stack, pushing element"<<endl;
+    stack<int> st;
+    st.push(10);
+    st.push(20);
+    st.push(30);
+    st.push(40);
+    
+    cout<<"st size="<<st.size()<<endl;
+    
+    while(!st.empty()){
+        cout<<"Front is "<<st.top()<<", ";
+        st.pop();  //pops from top/back
+    }
+    
+    cout<<"\nst size now="<<st.size()<<endl;
+}
+
+/** deque demo, double ended queue **/
+void dequeDemo(){
+    deque<int> dq;
+    
+    cout<<"pushing at back"<<endl;
+    dq.push_back(10);
+    dq.push_back(20);
+    dq.push_back(30);
+    
+    for(int i=0; i<dq.size(); i++)
+        cout<<" "<<dq[i];
+        
+    cout<<"\npushing at front"<<endl;
+    dq.push_front(40);
+    dq.push_front(50);
+    dq.push_front(60);
+    
+    for(int i=0; i<dq.size(); i++)
+        cout<<" "<<dq[i];
+    
+    cout<<"\nemove element from front & back"<<endl;
+    dq.pop_back();
+    dq.pop_front();
+    for(int i=0; i<dq.size(); i++)
+        cout<<" "<<dq[i];
+    
 }
