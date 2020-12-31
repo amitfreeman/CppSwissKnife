@@ -8,7 +8,8 @@ using namespace std;
 #define M 8
 #define N 6
 
-/* Solution 1: recursion call top to botton, base condition at edge 0
+/* Solution 1: space optimal, Time : O(M*N) space: O(1)
+ * recursion call top to bottom, base condition at edge 0
  * calculate square size at each position
  */
 int findLargestSquare(int mat[M][N], int r, int c, int& max_size){
@@ -64,7 +65,8 @@ int findLargestSquare(int mat[M][N], int r, int c, int& max_size){
 		return size;
 }
 
-/* Solution 2: Dynamic Programming
+/* Solution 2: time optimal, Dynamic Programming
+ * Time O(M+N), space O(M*N)
  * memorize suqare from bottom to top, no recursion call
  */
 int findLargestSquareDP(int mat[M][N]){
