@@ -1,3 +1,5 @@
+/* This program demonstrates basic 
+ * operations using bitwise operator */
 #include <iostream>
 #include <vector>
 
