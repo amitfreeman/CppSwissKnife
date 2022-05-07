@@ -18,7 +18,7 @@ class Cls{
      
      
      ~Cls(){
-         cout<<"\nDestroying Cls with value ="<<this->var;
+         cout<<"\nDestroying Cls with value ="<<this->var<<endl;
      }
     
 };

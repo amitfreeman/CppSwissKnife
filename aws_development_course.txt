@@ -1,0 +1,947 @@
+https://interactive.linuxacademy.com/diagrams/TheSigmaScripts.html
+
+Pearson exam center - https://wsr.pearsonvue.com/testtaker/registration/ExamPoliciesPage/AWS?conversationId=1921161
+
+ARN = Amazon Resource Name
+AWS Learning ID - AWS01487982   (<mon>@2020)
+
+[‎18-‎Jun-‎20 1:24 PM]  Utsav Barman:  
+Stock market technical analysis
+https://freefincal.com/do-not-use-sips-for-small-cap-mutual-funds-try-this-instead/ 
+ 
+AWS own learning resources
+https://aws.amazon.com/training/
+
+AWS policy generator
+https://awspolicygen.s3.amazonaws.com/policygen.html
+
+---16-May-2020---
+
+Compute 
+EC2 - Elastic compute cloud, virtual server
+ECS - Elastic container service, managed
+Lambda - serverless computing, upload your code
+Elastic Beanstalk - Platform as a service
+
+RDS - Fully managed SQL DB
+Serverless No-SQL DB - Dynamo DB
+In-memory cache Engine - Memcache/Redis
+Petabyte scale DB warehouse- Redshift
+
+Storage
+S3 - file/object storing
+Glacier - deep storage
+
+
+
+--17-May-2020 ----
+IAM:
+Policies - set of permission for IAM users
+       - non-explicit deny - user when first created has no access to AWS resources
+	   - 'explicit deny' always overrides 'explicit allow'	 on any level
+
+roles -  set of rules/permissions for access between different AWS resources (like between EC2-S3), or between external user and AWS resource
+       - roles will have permission policies
+	   - roles can be assigned to resource, or another account
+	   
+STS - security token service
+      Short term access to AWS resources, uses API - has component security token, access key ID, secret access key
+	  	  
+API Keys - user has API key, can be used to connect from AWS CLI or SDK. secret key should be stored when showed at the time of creation, else create new one
+
+KMS - key management service - used to Encrypt/Decrypt data
+      CMK - customer master key, generate it
+	  Data key - used to encrypt data (for data> 400KB)
+	  Encrypt Data key using CMK, and then store it
+https://docs.aws.amazon.com/kms/latest/developerguide/overview.html
+https://docs.aws.amazon.com/kms/latest/APIReference/Welcome.html
+
+Amazon inspector - automatic network security assessment service for EC2 instance and application instance hosted on it
+
+Amazon cognito - Web Identity federation, connect to AWS resources from external mobile/PC app
+                   user pool - user to connect   
+				   identity pool - like IAM role
+	cognito sync - sync data between application/cache and data in AWS
+	
+	Please see https://aws.amazon.com/iam/details/manage-federation/ 
+	| http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html for details
+	
+	AWS has policy simulator
+	or do AWS CLI dry run   --> command  --dry-run
+	
+	use STS to decode API error messages,
+	    sts decode-authorization-message
+		>aws sts decode-authorization-message
+		
+	**Use CLI with MFA
+	   STS GetSessionToken API call
+	
+--- 18-May-2020 ----
+
+EC2 - Elastic Compute Cloud
+https://aws.amazon.com/ec2/instance-types/
+    AMI - Amazon Machine Images
+    Storage options - EBS - Elastic block storage, its network persitent storage
+	                          - General purpose SSD, dev and test, 3IOPS
+							  - provisioned IOPS SSD, for prod and critical mission 32000 IOPS, 
+							  - HDD, cold HDD and optimized HDD
+							  - EBS magnetic storage
+	                  EFS - scalable elastic file storage (across AZ)
+					  instance storage - Ephemeral storage, attached to machine, if machine shut down data is erased, remains if reboot
+					  
+	Buying options 
+	             -> On Demand - most common, expensive
+				 -> RI - reserved instance, commit for certain period like 1-year, 2-year
+				 -> Spot instance - bid for required instance, if price is equal or less then allocated
+				 -> Dedicated instance - full control over machine and licensing
+				 
+    Option -> User data at the time of creating instance, bootstrap script, like install Apache right after instance creation
+	
+	connect to EC2 instance
+	          ssh -i <private_key>  user@instance
+	
+	After adding device we need to mount it, refer documentation
+	  >lsblk    ---> list volumes
+	
+	restrict permission of private key 
+	    ssh 400 <private key>
+			  
+	ELB - Elastic load balancer
+	Doc - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html
+          https://aws.amazon.com/blogs/aws/new-tls-termination-for-network-load-balancers/
+	
+	EC2 private IP
+	EC2 public IP
+	
+	DescribeImages will list the AMIs available in the current region.
+	To view all categories of instance metadata from within a running instance, use the following URI: http://169.254.169.254/latest/meta-data/
+	to view IPs: http://169.254.169.254/latest/meta-data/public-hostname
+	
+	https://aws.amazon.com/ec2/instance-types/
+	
+	EC2 -> ENI = Elastic network interface, it is virtual network card
+	
+	Get EC2 meta data
+	>curl -s http://169.254.169.254/latest/meta-data/
+	>curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone
+	
+---- 19-May-2020 --------
+VPC - virtual private cloud
+      Has subnets, crossed across availability zones, not across regions
+	  5 VPC per account per regions , 1-internet gateway per VPC
+	  50 customer gateways per region
+	  500 secutiry groups
+	  
+	  Route table - directs traffic, has default route for local subnet CIDR
+	                if Internet gateway attached, subnet is public, else private
+	     
+       NETWORK LAYER		 
+					       internet Gateway
+					---attached----                             --has route table
+						VPC
+		
+        NACLs - Network Access control list - firewall for subnet - lower number rule priority first  STATELESS 
+		                                                              (This means any changes applied to an incoming rule will not be applied to the outgoing rule. e.g. If you allow an incoming port 80, you would also need to apply the rule for outgoing traffic.)
+        Security Group - Firewall for individual instance/resource like EC2		    STSTEFUL
+		                                                               (This means any changes applied to an incoming rule will be automatically applied to the outgoing rule. e.g. If you allow an incoming port 80, the outgoing port 80 will be automatically opened.)
+		
+	   SECURITY LAYER
+	            N ACL check
+				  ---then
+				Sec Group check
+				
+	    NAT - gateway, must be provisioned in public subnet
+		    To connect to instances in private subnet to internet
+			bastion host, used to connect via ssh to instance in private subnet
+			
+			10.99.1.0/24
+			
+    VPC Endpoint gateway --> used to connect resource in VPC to other AWS resources over private network, 
+                              by default AWS resources are public over internet	
+	
+	ALB - application load balancer 
+	       works on HTTP/HTTPs/WebSocket
+		   path based routing, foreward request based on URL
+		   
+    NLB - network load balancing, handles millions of request per sec
+	      TCP/SSL protocol , static IP
+		 
+		both support Dynamic host port mapping
+		
+	SSL - Secure socket layer
+	=TLS - Transport layer security
+		can be used using ACM - AWS certificate manager
+		Certificate can be loaded in .ebextensions/securelistner-alb.config, for ALB
+	SNI - server name indication - to load multiple SSL for one webserver
+	
+	ASG - Auto scaling group
+	
+	5 Elastic IPs allowed per region
+	
+https://aws.amazon.com/blogs/aws/new-elastic-network-interfaces-in-the-virtual-private-cloud/
+	
+----- 22-May --------  
+https://docs.aws.amazon.com/lambda/latest/dg/API_Operations.html
+https://docs.aws.amazon.com/lambda/latest/dg/lambda-environment-variables.html
+    AWS Lambda - serverless hosting
+          AWS functions are triggered by Events , like API gateway/ cloudwatch events/ internal AWS service integration	
+		  Use cloudwatch logs to store logs
+		  We can set timeout - time limit for function run
+		  
+	Configuration:
+	    Handler - file_name.function_name
+		Time out, we can put lambda function into VPC, ENV variables (3 sec default, 900 sec (15min) max)
+		
+		Create package for your code with dependencies and upload as .zip in AWS lambda
+		  
+		Version - $LATEST -> editable latest,  1,2,3 incremental as we go on saving
+		Aliases -> create alias like for Dev, Staging, Prod. Prod points to specific versions like 1 or 2 , or split between them
+		
+----- 23-May -----
+
+    ECS - Elastic container service, AWS Fargate
+	Container - Docker images, can contain webserver, application server, maeeage queue, backend server on EC2
+	ECR - container repository = docker registry like docker hub
+	
+	ECS task definition -> which container should be used, path, port etc. -> creates task
+	ECS agent -> schedule, start stop task
+	       
+	    ECS Practical: commands
+		 sudo yum update -y
+		 sudo yum install -y docker
+		 sudo service docker start
+		 sudo usermod -a -G docker $USER   --add docker user to authorized list 
+		 --docker installed at /var/lib/docker
+		 
+		 git clone https://github.com/linuxacademy/cda-2018-flask-app.git
+		 git checkout ecs-master
+		 
+		 docker image list
+		 docker build -t cda-flask-app .    --path to dockerfile-application, here its current directory .
+		 docker run -p 80:80 cda-flask-app    --- <host port>:<container port>  <image name>
+		 
+		 curl localhost
+		 
+		 docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+cda-flask-app       latest              19b65b3a871f        11 minutes ago      218MB
+python              3.5-slim            6c1acaa52013        2 days ago          149MB
+
+         --create repository using AWS ECR
+		 aws ecr create-repository --repository-name cda-penguin-app
+{
+    "repository": {
+        "repositoryArn": "arn:aws:ecr:us-east-1:595438810944:repository/cda-penguin-app",
+        "registryId": "595438810944",
+        "repositoryName": "cda-penguin-app",
+        "repositoryUri": "595438810944.dkr.ecr.us-east-1.amazonaws.com/cda-penguin-app",
+        "createdAt": 1590249646.0,
+        "imageTagMutability": "MUTABLE",
+        "imageScanningConfiguration": {
+            "scanOnPush": false
+        }
+    }
+}
+
+        --login to Amazon ECR, it generates the command which we need to run again
+		aws ecr get-login --region us-east-1 --no-include-email
+		
+		--load our created docker image into ECR
+		docker tag cda-flask-app:latest 595438810944.dkr.ecr.us-east-1.amazonaws.com/cda-penguin-app
+		
+		595438810944.dkr.ecr.us-east-1.amazonaws.com/cda-penguin-app
+
+--- EB - elastic beanstalk  --host web app
+
+ --- ---
+ Application code + Env = EB deployment version
+ *EB uses CloudFormation underneath  --> look for resources
+ 
+ Deployment options 
+ 1. all at once
+ 2. rolling update
+ 3. rolling update with additional instances
+ 4. Immutable (deploy new code on new instances and take down old ones)
+ * Blue/green deployment -> not directly available in EB but can be done manually
+ 
+ Elastic beanstalk has its own CLI
+   eb create, eb status , eb health etc.
+   
+ Connection parameters, other resource sharing details should be stored in .ebextensions folder .config file  
+ .ebextensions 
+    ->environment.config
+	
+ After creating ELB (Application/Network/Classic) for EB, you can't change it, only can change configuration
+
+ RDS should be Decoupled with EB, because otherwise it is tied with EB lifecycle 
+
+ https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html 
+ https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options.html 
+ https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.platform.upgrade.html
+ https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environment-configuration-methods-before.html
+ https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html
+ 
+ practical: commands
+ git clone https://github.com/linuxacademy/cda-2018-flask-app
+ python3.6 -m venv venv    --create virtual python environment
+ source venv/bin/activate   --activate virtual env
+ pip install -r requirement.txt   --if we need to download all dependencies
+ pip install awsebcli             --install aws EB cli
+ eb init                          -- start EB program,  .elasticbeanstalk created
+ aws ec2 create-default-vpc       --create default VPC
+ aws ec2 create-default-subnet --availability-zone us-east-1a          --default subnet
+ eb create            --create EB application
+ 
+
+----- 24-May ------
+
+   S3  - storage
+   Bucket -> uniq name across AWS, (created in region, but it is global object)
+   Object -> single object/file/data ,  Folder -> only for logical representation, S3 is flat storage
+   Upload ->   single part upload < 100MB  ,  100MB < multi part upload recommended,  5GB < multi part upload must 
+   services -> snowball/snowmobile -> petabyte scale data trasanferred physically,
+               Storage gateway -> device transfer
+			   import/export -> mail your own hard drive
+    commands:
+    du -shc ./*    ---size of files in current directory
+	aws s3 cp <local_file>  s3://<bucket_name>/<file_name>    ---upload file using CLI
+   
+   performance optimization:
+   1. Add randomness to object names, AWS handles partitions internally, different name=different key=different partition
+   2. deploy cloud front in different regions, reduced latency
+   
+   S3 permissions -> Bucket policy, or ACL - access control list on bucket n object
+   S3 object encryption -> in-transit client key, 	Encryption at rest - server side
+   KMS - managed key service,  SSE-S3 - S3 managed key,  SSE-C = customer mamanged key, customer needs to provide in PUT and GET request
+   
+   Versioning - bucket level, applied to all Objects under it, 
+                by default Disabled (Suspended)
+		new version = new object with version ID
+		
+	commands:
+	aws s3 ls s3://<bucket_name>    --list objects in bucket
+	aws s3api list-object-versions --bucker <bucket_name>    --list objects with versions
+	aws s3 cp s3://<bucket>/<file>  ./      --copy latest version file to local
+	aws s3api get-object --bucket <bucket> --key <file>  	--version-id <version>          --get file by version
+	
+	Storage classes:  operate on Object level
+	1. standard - highest cost, 99.99999 (11) times % durability, 99.99 availability
+	2. RR - reduced redundancy - high cost  99.99 durability, 99.99 availability
+	3. S3 - IA - infrequent access  -- less cost, 99.99 durability, 99.90 availability
+	     Standard IA
+		 one zone IA
+	*Intelligent tiering -> places into class according to usage
+	
+	4. Glacier -> long term storage, not used frequently, moved thru lifecycle policy, archival storage but should NOT be used as backup
+	
+	Static website hosting -> provide index and error html file
+	give public access to files
+	Amazon route 53 can be used to change domain
+	
+	CORS - cross origin resource sharing
+	  share resource over different buckets for static website
+	  setting is under 'permissions' section of object/bucket
+	  
+	
+	practical: commands
+	   aws s3 mb s3://amitpar-cda-s3-bucket     --create new bucket
+	   aws s3 ls
+	   
+	Error codes -
+	https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html
+	
+	400 - Bad request
+	403 - forbidden, access denied
+	404 - No Such Bucket
+	409 - Bucket Already exists, or BucketNotEmpty when you try to delete it
+	
+	The multi-part upload API will allow you to upload a file to S3. 
+	After all parts of the object have been uploaded to S3, use the Complete Multi Part Upload API call to re-assemble the object.
+	
+	S3 naming convention, 3 to 63 char, lower case, number, periods, must start with lower case number or lower case letter
+	can't end with dots, no consecutive dot or dash
+	can't be formatted as IP address
+	
+	x-amz-server-side-encryption  -> used in API header for server side encryption
+	
+	static website name - 	<bucket-name>.s3-website.<AWS Region>.amazonaws.com
+	
+	S3 Replication -> versioning must be enabled in source and destination, IAM role needed
+	Management -> replication
+	Delete marker is not replicated
+	
+	S3 signature URL using CLI
+	>aws configure set default.s3.signature_version s3v4
+    >aws s3 presign s://<bucket name>/<object>  --expires-in 300 --region <region>   
+	
+	S3 transfer acceleration -> for upload only, uses private network after edge location
+	
+	--- S3 Athena ----
+	  -> serverless service to perform analytics directly against S3 service
+   
+------- Route 53 ---------
+
+   Managed DNS, it is global service
+   A - hostname to IP4
+   AAAA - hostname to IP6
+   CNAME - hostname to hostname (works only for subdomain)
+   Alias - hostname to AWS resource (Load balancer, cloudfront)
+   
+   Simple routing policy -> set multiple IP addresses,
+   Weighted Routing policy -> set multiple IP addresses, control the % of requests that go to specific end point
+   Latency policy -> based on geoloaction , chose IP based on low latency
+   Failover policy  -> must be associated with health check
+   Geolocation policy -> specific region to specific IP
+   multivalue -> better to use load balance than this
+
+----- CloudFront ---------
+is CDN - content delivery network
+
+   OAI -> origin access identity, IAM role to be used
+   Cache Invalidations -> flush the cache, force refresh
+
+--- DynamoDB -----
+NO SQL DB
+Cost varies based on - WCU, RCU Write/Read capacity unit, streams - per 100k reads, Reserved Capacity
+                    Provisioned throughput
+                     - Capacity unit measured for WCU 1 write of 1 item of 1kB or less per second
+					    if table needs 120 items of 2.5 kB per min access, 
+						then (120/60sec) * 3kB = 2*3 = 6 WCUs needed
+                     -  Capacity unit measured for RCU 1 read of 1 item of 4kB or less per second (Strong consistency)
+					    if table needs capacity for read 10 items of 13kB each per second
+						then (10 * (13/4 per RCU) = 10 * (~4) = 40 RCU
+						
+						Strongly consistent of 4kB requires 1 RCU
+						Eventual consistent of 4kB requies 1/2 RCU, 8kB = 1 RCU
+						Transactional read requests require two RCUs to perform one read per second for items up to 4 KB, 4kB =2 RCU
+						
+	                The UpdateTable API call does not use capacity. It is used to change provisioned throughput capacity.
+					By default, reads from DynamoDB are eventually consistent. However, strongly consistent reads can be specified.
+
+    primary key -> simple key = partition key
+    primary key+sort key - composite key
+	
+	item = (key+attributes)  -> basic element of Dynamo DB, like row of RDB
+	
+	Attribute Data type
+	  Scalar type - String, Number, Binary, Boolean, Null
+	  DOcument Type - List, Map
+	  Set - Number set, Strings set, Binary set
+	  
+	  Read operations - GetItem, BatchGetItem, Query, and Scan (costly). 
+	  
+	  Secondary index = different sort key
+	  Local Secondary Index - must be created at the time of table creation, in sync with main table primay key
+	                         - maximum 5 (?)
+	  Global Secondary Index - can be created after table creation, has its own RCU and WCU
+	                         - maximum 20
+	  
+	  https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-api
+	  https://aws.amazon.com/blogs/database/choosing-the-right-dynamodb-partition-key/
+	 
+	DynamoDB Auto scaling vs on Demand
+	
+	Auto scaling -> Increase/Decrease RCU, WCU based on % load, like 70%, 
+	                Uses Amazon cloud watch to monitor					
+	On-Demand -> Billing option, pay as we use, no capacity limit
+	
+	DAX - DynamoDB Accelator - performance improvement - uses cashing, milli sec to micro sec, its for read intensive work
+	
+	DynamoDB Streams - like Triggers in RDB -> trigger event, integrate with Lambda
+	
+	Dynamo DB uses optimistic concurrency control - Conditional operations allow users to implement optimistic concurrency control systems on DynamoDB.
+	
+	DynamoDB does not support complex relational queries (e.g. joins) or complex transactions. If your workload requires this functionality, 
+	or you are looking for compatibility with an existing relational engine, you may wish to run a relational engine on Amazon RDS or Amazon EC2.
+	
+	For any AWS account, there is an initial quota of 256 tables per AWS Region
+	Each table in DynamoDB can have up to 20 global secondary indexes (default quota) and 5 local secondary indexes
+	BatchGetItem - A single operation can retrieve up to 16 MB of data, which can contain as many as 100 items
+	PutItem, UpdateItem, and DeleteItem allow conditional writes, where you specify an expression that must evaluate to true in order for the operation to succeed.
+	
+	DynamoDB Transactions - new feature, ability to create/Update/Delete multiple rows in different table at same time
+	
+	DynamoDB can be used as session state storing
+	
+---- Lambda function----------
+  --commands, create Lambda function from simple js file
+	index.js    --already present
+	zip function.zip index.js
+	aws configure          ---configure AWS working ENV, put key and secret key of account, and region to work in
+	aws lambda create-function --function-name <name>  --zip-file fileb://function.zip  --handler index.handler  --runtime nodejs.10 --role arn:aws:iam::<account>:role/lambda-dynamodb-role
+	--manually trigger event to test lambda function
+	aws lambda invoke --function-name <name> --payload file://input.txt  outputfile.txt
+	--create event source mapping between lambda function and DynamoDB
+	aws lambda create-event-source-mapping --function-name <name> --batch-size 100 --starting-position LATEST --event-source <DynamoDB-Stream-ARN>
+	
+	Under free tier 1,000,000 requests and 400,000 GB of computation
+	*Dockeris not run on Lambda
+	
+	Synchronous call (API, ALB, Application call)
+	Asynchronous call (S3, SNS, CloudWatch event)
+	Event source mapping (Lambda polls messages from other rsources like SQS)
+	
+	Lambda+Event Bridge --> create serverless cron, timely execution
+	
+	To use X-Ray, use environment variables
+	_X_AMZN_TRACE_ID - contains tracing header
+	AWS_XRAY_CONTEXT_MISSING - by default, log error
+	AWS_XRAY_DAEMON_ADDRESS - the X-Ray Daemon IP_ADDRESS:PORT
+	
+	By Default Lambda is outside default VPC
+	  If we configure Lambda in VPC-subnet, need NAT gateway in public subnet to access internet
+	
+	Bydefault 128 MB RAM used
+	1792 MB you get one full vCPU, after this we should use multithreading in application to  take advantage of added RAM/vCPU
+	Default timeout 3 sec, max 900 sec (15 min)
+	Concurrency limit -> 1000 concurrent operations at a time, applies on account level, so limit per function so all can work
+	
+	/tmp  --> store files needed in this directory, upto 512 MB
+	
+	Lambda+ CodeDeploy integration using SAM (serverless application model)
+	
+------ RDS ---------
+
+   Encryption is allowed when creating DB, KMS key are region specific
+   workaounrd - Snapshot can be encrypted, then re-create DB using snapshot
+   
+   AWS - RedShift -> petabyte scale Datawarehouse service, fully managed and scalable by AWS, used for big-data Analytics
+   
+   ElastiCache - Store frequently queried results in Elastic cashe cluster, DB performance improvement
+   uses engine 1.Memchched or 2.Radis
+   Caching strategies
+     1. Lazy caching  - cach when query missed, can have stale/out of date data if not refreshed
+	 2. Write Through - update DB as well as Cache, cache size can increase
+	 3. TTL - time to live - Expires cache data after some time, improvement on Lazy cache and write Trhough
+	 
+----- SNS --------
+    Simple notification  service
+	
+	*SNS Topic -> Group of subscriptions that you intend to send message to
+	*SNS subscriber -> end point, can be HTTP/HTTPS , Email, Email-json, SQS, Mobile App, Lambda, SMS
+	*SNS Publisher -> who publishes message, AWS CLI, SDKs, Cloudwatch alarm, Event
+	
+	MPNS - mobile push notification service
+	SNS APIs and Common Errors documentaton - A.I. for exams
+	
+	
+----------- 26-May ----------
+
+  ----- SQS ----
+    Simple Queue service
+	Procuder -> SQS -> consumer  (consumer retrieves Message and deletes from queue) message size 256kB of any text format
+	
+	Messages between servers are retrieved using polling-
+	Long polling  (1-20 sec, less API request)   (waitTimeSeconds>0)
+	Short polling  (more API requests over long polling)    (waitTimeSeconds=0, costly)
+	
+	Types of Queueing
+	1. Standard Queues
+	    -unlimited number of message per/sec
+		-multiple producers multiple consumers
+		-Appilcation should be able to tolerate duplicate messages, message received 'at least once' with 'best effort ordering' policy
+		-120,000 in-flight messages (visibilityTimeout) 
+	2. FIFO Queues
+	    -support 3000 messages with batching, and 300 without
+		-support multiple producers, but only support multiple consumers thru group, each group each queue processing
+		-order is maintained and message sent once, application where it is important and can't handle duplicates
+	    -20,000 in flight messages (visibilityTimeout )
+	
+	SQS Resource policy should be made to enable message transaction between ARN and SQS
+	
+	Receipt handle is available within visibilityTimeout period
+	
+	Default visibility timeout?  - 30 seconds
+	How long SQS meesage be retained? - 14 Days (maximum), 4 days (Default)
+	An SQS request can contain up to TEN (10) individual messages, as long as he total size of the request does not exceed 256KB.
+	
+	DLQ - Dead letter queue, if set up, messages which failed to process for multiple times are sent here
+	
+	SQS Extended Client (java library) to send messages larger than 256 KB
+	
+ ------- SWF ----------
+ Amazon simple work flow - can last upto a year
+ components - Workflow ->               Task
+                         Activity task        Decider task
+						   Activity -> performed by worker (AWS service)
+						   
+ ----- Step Functions -------
+    visual workflows and flows, orchestrate and visualize logic for serverless  applications
+	components - Tasks
+	             State machine -> defined using JSON Amazon state language
+				                state -> uniq name in Step function, 
+								Task, Choice, Fail or succeed, wait, parallel
+								
+------- 27-May --------------------------------
+ ---- API Gateway -------------
+ Fully managed service to create and manage API
+  Supports versioning, RESTful, can store API responses using cloudWatch logs,DDoS protection using cloudFront
+	
+	API gateway Resources - http://someurl/car  -> car resource location
+	API gateway Methods - GET, POST, PUT, DELETE, associated with resources
+	
+	Deployments: Snapshot of API resources and methods, way to maintain version
+	Stages: Reference to lifecycle status of API like Dev,Prod,Tes etc., methods/resources are deployed to various stages
+	        Cashing can be done per API, per stage
+			
+	API Cashing: (makes sense for production)
+	0 to 3600 sec, Default 300 Sec.
+	Can be API level or method level
+	Storage between 0.5 GB to 237 GB, Encryption available
+	
+	API Usage plan or API Keys to motetize API for use
+	  - Configure API methods to require an API key, and deploy to API stages
+	  - API request header should contain x-api-key , X-API-Key
+	  
+	Account limit - 10000 requests per sec
+	
+	400 - Bad req, 403 - access denied, WAF filtered, 429 - quota exceeded, throttled
+	502 - Bad Gateway Exception, 503 - Service unreachable, 504 - integration failure
+	
+   ---- AWS CloudWatch ------  Metric, Logs, Alarm
+   CLoudwatch -> used to monitor other AWS services, need to configure metrics 
+                Detailed monitoring - 1min interval
+				Basic monitoring - 5min inverval
+				
+    EC2 istances need to run CloudWatch agent to store logs on CloudWatch
+	--Create custom CloudWatch metric, you can set alarm on it 
+	--Alarm
+	--Event - to capture change in state of resource
+	   EventBridge -> next gen , outside AWS services can create event using bus	
+	
+    Logs -> to store application log	
+	   
+-------- AWS CloudTrail -----
+	 History of events/API calls made within your AWS account,\
+	 logs:
+	  -Console
+	  -SDK
+	  -CLI
+	  -AWS Services
+				
+	-------- Cloud Formation -----------
+	https://github.com/linuxacademy/aws-cda-2018/tree/master/cloudformation/cloudformation-essentials
+	
+	infrastructure as code, -> cloudformation template uses JSON or YAML defines stack
+	AWS resource name : AWS::<aws-service-type>::<variable>   AWS::Dynamodb::Table, AWS::IAM::Role
+	
+	Intrinsic function -> assign cloud formation properties that are only available at or after runtime, like EC2 instance is dependant on some role
+	Fn::GetAtt -> get attribute,  Fn::Join -> appends value ,  Ref - return value
+	
+	Conditions are created in their own property section and then referenced in the resource declaration, 
+	allowing for the conditional creation of resources.
+	
+	http://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_Stack.html 
+	
+	AWS JSON/YAML structure for this
+	AWS Template format version -> versioning
+	Description  -> Text only information about stack
+	Metadata  -> properties of template,
+	Parameters  -> values to pass to template  (dynamic inputs for template)
+	               AWS Pseudo parameters/Default parameters
+				   AWS::AccountId
+				   AWS::NotificationARNs
+				   AWS::Region
+				   AWS::NoValue
+				   AWS::StackId,   AWS::StackName
+	Mappings  -> dependency between AWS resources  (static variables for your template)
+	               Fn::FindInMap
+				   !FindInMap [ <MapName>, <Top Level Key>, <Second Level Key>]
+	Conditions  -> condition to be checked when stack is created or updated, like Prod/Test different resources, get values from map
+	Output  -> After resource creation we can output details here (References to what has been created)
+	            Export output , --of resources, of thing we want to import in other stack
+	Resources (*here what most things are created, mandatory)  -> AWS resources to be included
+	Transform -> for serverless/Lambda use to chose application model
+	
+	Template Helpers:
+	1. References
+	2. Functions
+	
+---- Parameter store essential -----
+	https://github.com/linuxacademy/aws-cda-2018/blob/master/ssm-paramater-store/paramater_store_example.py
+	
+	Store sensitive information like password, license key, API Keys etc.
+	Common API - falls under AWS systems manager - SSM
+	PutParameter - String, StringList, SecureString
+	GetParameter
+	DeleteParameter
+
+----- 29-May------------
+    AWS security best practice - https://www.lucidchart.com/documents/view/dfdee40b-893c-4d68-80ff-a980b62592d1/0
+	Well Architectured framework -  https://www.lucidchart.com/documents/view/81457ecf-406a-41a6-af1f-c72dc82b8c01/0 
+	Best practices - https://www.lucidchart.com/documents/view/3c4983fb-516c-4324-b562-93bf93e66717/0
+	CI/CD  - https://www.lucidchart.com/documents/view/b8a9e318-d525-469d-8016-793fb41da2f2/0
+	mS in AWS - https://www.lucidchart.com/documents/view/f51c65c7-fda0-400c-b20f-cc920e55d0a8/0
+	Serverless Arch with Lambda- https://www.lucidchart.com/documents/view/69c1b85c-a4dd-4828-be58-3ef5a15efce8/0
+	Optimizing Enterprise Economics with Serverless Architectures - https://www.lucidchart.com/documents/view/f012ef3f-deaf-4442-8008-a796d80db3fe/0
+	Running Containerized Microservices on AWS -  https://www.lucidchart.com/documents/view/392c5e21-5047-41fe-8f46-f610c844c4ce/0
+	Blue / Green Deployments on AWS - https://www.lucidchart.com/documents/view/e7f49c8f-34d7-4b31-9313-1485e84b0510
+	
+    --- CI/CD steps
+	CodeCommit: storing our code (alternative Github)
+	CodeBuild: building and testing code changes   (alternative Jenkins)
+	CodePipeline: automating our pipeline from code checkin to ElasticBeanstalk deployment
+	CodeDeploy: deploying code on EC2 fleet
+
+	
+	---- code commit -----
+	our own git repository
+	Authentication is done using SSH key or HTTPS
+	
+	--- Code build ------
+	compile source code + UT, produce code artifact
+	Concepts 
+	 Build project - Defines build parameter, source code path, ENV, build commands, output store location
+	 Build ENV - OS or container docker image
+	 Build spec - YAML file to describer collection of commands and setting for build (*need to learn to use code build)
+	 
+	 continuous scaling
+	 pay for build time
+	 buildspec.yml needed at root level in code commit
+	 runs on docker
+	 
+	 phases (yml file contains command to run)
+	  install - install dependencies you may need to run build
+	  prebuild - final commands to execute before build
+	  build - actual build command
+	  post build - finishing touch (zip output)
+	  
+	Use codebuild agent, to run build locally
+
+	---- codepipeline ------
+	  works with artifacts stored in S3
+	  -> to perform action, pipelien needs IAM service role
+	  -> Pipeline state changes happen in AWS cloudwatch events, which can trigger SNS notification
+	  -> stages have multiple action groups
+	  Works well automated with BeanStalk
+	
+
+	---AWS codeDeploy -----
+	Automate deployments on application, can be EC2, Lambda etc.
+	 Minimize downtime, stop and rollback, centralized control
+	 Blue-Green vs in-place deployment  -> new code on back up system VS update existing whole system with new code
+	 
+	 Blue-Green options ->
+	 1. Canary -> %of traffic to new code, wait till no error, then shift all
+	 2. Linear -> incrementaly add load to new column in some %
+	 3. All at once -> all traffic to new code
+	 
+	 Does not provision resources
+	 appspec.yml-> to control deployment
+	 
+	 Hooks/steps:
+	 Application stop -> DownloadBundle -> BeforeInstall -> AfterInstall -> ApplicationStart -> ValidateService
+	 
+	 Rollback = new deployment with last known good version
+
+    ---- code star ---------
+	Project templates -> combines all CI/CD AWS tools in common front end
+	
+	    ------ AWS X-Ray -----
+	scans HTTP headers to coupled applications,
+	Error - client side error (400 series)
+	Fault - server side error (500 series
+	THrottle - throttling errors (429 Too many requests)
+	
+	Two ways to implement
+	1. Include in code using X-Ray SDK, it then scans  HTTP/HTTPS calls , Queues
+	2. Run X-Ray Daemon on machine (AWS Lambda runs bydefault), works at low level UDP packet interceptor
+	
+	Sampling rule,
+	Ammotations for mapping and flitering
+
+----- CLI ----
+download AWS CLI interface for windows/Linux 
+
+aws --version
+aws configure
+
+   ** To access AWS resources (like S3) from EC2, always use IAM role, never configure credentials on it, EC2 are not fully owned by us
+	
+--- AWS Cognito ----
+   Third party user access
+   
+   1. Cognito user pool - Sign in functionality for app user (Google, Facebook authentication included)
+                        - integrate with API Gateway, ALB
+   
+   2. Cognito Identity pool(Federated identity)temp AWS credential
+    - Provide AWS credential to third party users (Google, Facebook authentication), 
+                                                  - integrate with cognito user pool as identity provider
+												  
+   3. Cognito Sync = App Sync  - Synchronized data from device to cognito , mobile Apps
+                      has GraphQL Schema to combine and deliver data
+
+---- AWS STS ----
+
+    Security token service - Assumed role upto 1 hour, 
+	
+	Common APIs,
+	AssumeRole, AssumeRoleWithSAML
+	GetSessinoToken - returns access ID, Secret Key, Session Token, Expiration Date
+	GetCallerIdentity - returns details about IAM user or role used in API call
+	
+---- AD Active Directory , MS users, ghatiya---
+   1. AWS Managed AD (sync with on premise)
+   2. AD Connector (proxy to on premise)
+   3. Simple AD (only on AWS)
+   
+   
+----- AWS Encryption, KMS  ---------
+    --Encryption in flight - SSL
+	
+	KMS AMK (AWS managed keys)- CMK customer managed key  (if AMK used, its free, if user key used its paid)
+	    -> Symmetric key (AES 256 key) only used to Encrypt/Decrypt with API, can't be seen
+		-> Asymmetric key (RSA & ECC) public, private , Encrypt/Decrypt or Sign/Verify
+		
+	
+	Key is region specific, can't be transferred
+	
+	upto 4kB allowed, 4KB< need envelope encryption
+	  -> GenerateDataKey API - for large data, passed Data key DEK - data encrypted key ,coupled with encrypted file
+	  
+	APIs : Encrypt, Decrypt
+	       GenerateDataKey, GenerateDataKeyWithoudPlainText (to decrypt large data later on)
+		   GenerateRandom
+	
+	---SSM (system manager) Parameter store: store parameters like DB password, URL
+	
+	--AWS secrets manager - store secrets, rotate keys after X number of days, tied with RDS mostly, not free
+	
+--- SES - Simple email service --
+  SMTP - interface
+  AWS SDK
+  integrate with S2, SNS, Lambda
+  
+---- AWS certificate manager ---
+  Hosts SSL certificates
+	
+-------- Tricky questions ----
+
+"Resources" : {
+    "EC2Instance" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "InstanceType" : { "Ref" : "InstanceType" },
+        "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+        "KeyName" : { "Ref" : "KeyName" },
+        "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
+                          { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } 
+                      ] 
+                    }
+      }
+    },
+	
+	The InstanceType is most likely a parameter, which means whoever uses the template can decide what instance type to use at template creation time. Here is an example of what that might look like: "Parameters" : { "InstanceType" : { "Description" : "WebServer EC2 instance type", "Type" : "String", "Default" : "t2.small", "AllowedValues" : [ "t1.micro", "t2.nano", "t2.micro", "t2.small"], "ConstraintDescription" : "must be a valid EC2 instance type." }, }
+Within the same template, you can use the Ref intrinsic function to specify the parameter value in other parts of the template. The snippet uses the InstanceTypeParameter parameter to specify the instance type for an EC2 instance resource. For more information on the Instrinsic reference function URL:
+ https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+ 
+ documentation:https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file-structure-hooks.html#reference-appspec-file-structure-hooks-run-order In an in-place deployment, including the rollback of an in-place deployment, event hooks are run in the following order:
+
+Note An AWS Lambda hook is one Lambda function specified with a string on a new line after the name of the lifecycle event. Each hook is executed once per deployment. Following are descriptions of the lifecycle events where you can run a hook during an Amazon ECS deployment.
+BeforeInstall – Use to run tasks before the replacement task set is created. One target group is associated with the original task set. If an optional test listener is specified, it is associated with the original task set. A rollback is not possible at this point. AfterInstall – Use to run tasks after the replacement task set is created and one of the target groups is associated with it. If an optional test listener is specified, it is associated with the original task set. The results of a hook function at this lifecycle event can trigger a rollback. AfterAllowTestTraffic – Use to run tasks after the test listener serves traffic to the replacement task set. The results of a hook function at this point can trigger a rollback. BeforeAllowTraffic – Use to run tasks after the second target group is associated with the replacement task set, but before traffic is shifted to the replacement task set. The results of a hook function at this lifecycle event can trigger a rollback. AfterAllowTraffic – Use to run tasks after the second target group serves traffic to the replacement task set. The results of a hook function at this lifecycle event can trigger a rollback. Run Order of Hooks in an Amazon ECS Deployment
+In an Amazon ECS deployment, event hooks run in the following order:
+For in-place deployments, the six hooks related to blocking and allowing traffic apply only if you specify a Classic Load Balancer, Application Load Balancer, or Network Load Balancer from Elastic Load Balancing in the deployment group.Note The Start, DownloadBundle, Install, and End events in the deployment cannot be scripted, which is why they appear in gray in this diagram. However, you can edit the 'files' section of the AppSpec file to specify what's installed during the Install event.
+
+Which of these CloudFormation snippets of code will return an address that can be used to access our application from our browser if we're using a resource type of AWS::ElasticLoadBalancing::LoadBalancer with Logical ID "ElasticLoadBalancer"?
+Fn::Join":["",["http://", {"Fn:GetAtt":[ElasticLoadBalancer","DNSName"]} ]]
+
+-------
+
+###### AWS - common APIs #########
+
+--- EC2 ----
+AcceptTransitGatewayVpcAttachment  DescribeTransitGatewatVpcAttachments  RejectTransitGatewayVpcAttachment -> accept vpc attach request to transit gateway/describe pending vpc request , reject vpc peering
+AllocateAddress -> allocate elastic IP
+AttachInternetGateway -> attaches internet gatway or VPC gateway to EC2
+AttachNetworkInterface
+AttachVolume  ->  attach EBS volume
+BundleInstance -> Bundling windows instances only
+CopyFpgaImage -> copies the specified Amazon FPGA Image (AFI) to the current Region
+CopyImage -> copy AMI from source to destination region
+CopySnapshot -> Copies point in time of EBS volume
+CreateKeyPair, CreateVolume (EBS), CreateVpc
+DeleteKeyPair, DeleteVolume, DeleteVpc
+DescribeImages -> Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you.
+DescribeNetworkInterfaces , DescribeRouteTables , DescribeVpcAttribute
+DetachVolume -> Detaches an EBS volume from an instance
+ExportImage -> Exports an Amazon Machine Image (AMI) to a VM file
+ReleaseAddress -> Releases specified elastic IP
+StartInstances -> Starts an Amazon EBS-backed instance that you've previously stopped.
+StopInstances -> Stops an Amazon EBS-backed instance
+
+---- S3 -----
+AbortMultipartUpload -> This operation aborts a multipart upload
+CompleteMultipartUpload -> Completes a multipart upload by assembling previously uploaded parts.
+CopyObject ->  Creates a copy of an object that is already stored in Amazon S3
+CreateBucket -> creates new bucket
+CreateMultipartUpload -> This operation initiates a multipart upload and returns an upload ID
+DeleteBucket -> Deletes the bucket
+DeleteBucketLifecycle ->  Deletes the lifecycle configuration from the specified bucket
+DeleteObject -> Removes the null version (if there is one) of an object and inserts a delete marker, which becomes the latest version of the object. If there isn't a null version, Amazon S3 does not remove any objects.
+DeleteObjects ->  This operation enables you to delete multiple objects from a bucket using a single HTTP request. If you know the object keys that you want to delete, then this operation provides a suitable alternative to sending individual delete requests, reducing per-request overhead.
+GetObject -> gets object by object name
+HeadBucket -> This operation is useful to determine if a bucket exists and you have permission to access it
+HeadObject -> The HEAD operation retrieves metadata from an object without returning the object itself.
+ListBuckets -> Returns a list of all buckets owned by the authenticated sender of the request.
+ListObjects -> Returns some or all (up to 1,000) of the objects in a bucket. we can use filtering criteria
+ListObjectVersions -> Returns metadata about all of the versions of objects in a bucket.
+PutObject -> adds an object to bucket
+UploadPart -> uploads a part in a multipart upload
+
+
+--- DynamoDB ----
+BatchGetItem -> upto 16MB or 100 items The BatchGetItem operation returns the attributes of one or more items from one or more tables. You identify requested items by primary key.
+BatchWriteItem -> upto 16MB, individual item upto 400kB The BatchWriteItem operation puts or deletes multiple items in one or more tables
+DeleteItem, DeleteTable
+DescribeTable -> new , DescribeGlobalTable -> old before 2019
+GetItem
+PutItem -> Creates a new item, or replaces an old item with a new item
+Query ->  The Query operation finds items based on primary key values. You can query any table or secondary index that has a composite primary key (a partition key and a sort key).
+Scan
+UpdateItem, UpdateTable
+
+--- Lambda -----
+CreateAlias -> create alias, alias - version mapping
+CreateFunction
+DeleteAlias DeleteFunction
+GetAlias, GetFunction
+Invoke -> Invokes a Lambda function. You can invoke a function synchronously (and wait for the response), or asynchronously. To invoke a function asynchronously, set InvocationType to Event.
+
+---- SNS -----
+CreateTopic -> Creates a topic to which notifications can be published.
+DeleteEndpoint -> Deletes the endpoint for a device and mobile app from Amazon SNS. This action is idempotent. For more information
+Subscribe -> Prepares to subscribe an endpoint by sending the endpoint a confirmation message
+ListSubscriptions, Publish
+
+---- SQS -----
+ChangeMessageVisibility -> Changes the visibility timeout of a specified message in a queue to a new value. 
+ChangeMessageVisibilityBatch -> multiple messages
+CreateQueue, DeleteMessage, DeleteMessageBatch, ListQueues
+SendMessage, SendMessageBatch
+
+--- KMS ----
+CreateGrant -> Adds grant to customer master key (CMK)
+CreateKey -> creates master key
+GenerateDataKey, GenerateDataKeyPair (private, public)
+Enccypt, Decrypt -> encrypts/decrypts data using CMK
+
+--- CloudFormation ----
+CreateStack, DescribeStacks, DeleteStack, UpdateStack
+
+--- common way of workings/additional note
+ 
+   -- EC2 AMI Linux-2 common commands ---
+   yum update -y               ---> keep system updated
+   yum install httpd.x86_64    ---> install apache
+   systemctl start httpd.service         --> start apache
+   systemctl enable httpd.service
+   
+   
+   ---kinesis----
+   Managed alternative to Apache kafka
+   Streams
+      1 MB/s or 1000messages/s at writes per shard
+	  2 MB/s at read per shard
+	  
+	  KCL - Kinesis Client Library -java
+	  one Shard can be read by one KCL only

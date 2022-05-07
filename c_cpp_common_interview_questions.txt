@@ -1,0 +1,1108 @@
+some base - https://www.indeed.com/career-advice/interviewing/cpp-interview-questions
+          - 
+		  
+###############################################
+
+Memory allocation of program
+	- memory layout command ->  >gcc memory-layout.c -o memory-layout , >size memory-layout
+	Text - program, Data memory (static, global ) , heap (dynamic variable) , stack (program), 
+
+Q 1) diff between static var and functions in C and C++ and JAVA
+-> in C: Variables
+        - Retains the value thruought program , allocated in data segment of memory
+		- Are initialized
+
+		: Functions
+		- by default functions are global, 
+		- by declaring them 'static' we restrict scope to the file only where they are declared
+		
+-> in C++ : variables
+         - in Function -> it gets allocated for lifetime of program, is allocated/initialized only once first time, and value gets carried forward from previous cycle
+		 - in Class -> gets allocated only once in separate static/data storage, and value is shared between all objects of class
+		 - static objects -> same as variable, scope is retained thru all program execution
+		    : static Functions
+         - static member of class, can be invoked by <class name>::<static function>()
+		 - static function can only access static Data member of class or member static functions
+		 - 
+
+-> in JAVA : variables
+         - same as c++
+		  : Functions
+         - same as c++
+		  : Block , additonally static(){} block can be declared to manipulate static variables of class
+		  : Class - ONLY nested class can be static class
+		  
+	
+	static vs global variable -
+	    Global - is truly global, scope throught program & *has external linkage, visible to outside file (using extern in that file)
+		          defined in data segment of memory
+		static - like global retains value in program, but has internal linkage, in same file only not visible outside file
+		          defined in bss
+	
+
+Q 2) dynamic memory
+   in C:
+     1. malloc (memory allocation) -> by default void type pointer, return NULL if can't allocate memory
+	    Syntax:  ptr = (cast-type*) malloc(byte-size)
+		Example:  int* l_iptr = (int*) malloc(10*sizeof(int));
+		
+	 2. calloc (contiguous allocation) -> dynamically allocate blocks with value initialized to 0 ,return NULL if can't allocate memory
+	    syntax:  ptr = (cast-type*) calloc(n, element-size);
+		Example: int* ptr= (int*) calloc(10, sizeof(int));
+		
+	 3. free (free the memory)
+	     syntax: free(pointer);
+		 Example:  free(ptr);
+		 
+	 4. realloc (re-allocation) -> dynamically re-allocate memory
+	     syntax: pointer= realloc(ptr, newSize);
+		 Example: ptr=realloc(ptr, 20*sizeof(int));
+   
+   in C++:
+      malloc, calloc can be used, but recommended to use new (& delete) as it create new object space which is concept of OOPs
+	
+	1. new - allocate new memory block
+	   Syntax:  pointer = new data-type;   //data-type can built in data type or user defined like structure or class
+	   usage:
+	      a) int *ptr=NULL; ptr=new int;
+		     int *ptr=new int;
+			
+		  b) int *ptr=new(10); //initialize value of p to 10
+		  
+          c) int *pArr=new int[25];  //define array of int of size 25 dynamically
+
+double** pvalue  = NULL;      // Pointer initialized with null 
+pvalue  = new double [3][4];  // Allocate memory for a 3x4 array 
+
+          **
+		  p = new(nothrow) int;
+          if(!p) { cout<< "memory allocation failed"}		   //return NULL when can't allocate memory on heap
+		  
+	2. delete - deallocate dynamically allocated memory
+            a) delete ptr;  //delete single pointer
+			
+			b) delete[] pArr;  //delete array/block of memory
+			
+	**if class object is declared plainly it is stored in stack memory and destroyed at end of block,
+	while if object is declared with new operator , it created in heap/dynamic memory allocation, and won't be destroyed unil delete is called
+	Example,
+	
+	class Cls{
+	   int var;
+	   
+	   public:
+	     Cls(int i=0) { this->var=i };  //i=0 default value
+	}
+	
+	main(){
+	   Cls A(10);  //object A stored in stack memory
+	   Cls* B=new Cls(20);  //object B stored on heap memory
+	   delete B;   //if we don't delete it explicitely memory won't be release at end of program
+	   cout<<"Exit";  
+	}  //A is automatically destroyed
+	
+	https://www.geeksforgeeks.org/memory-layout-of-c-program/
+   
+3) OOPs concepts
+    Class, Object
+	Encapsulation, Abstraction -> hiding data, binding data & functions, show only needed information
+	Polymorphism -> compile time - operator overloading, function overloading 
+	                Runtime - function overriding in inheritance - virtual function
+					
+	Access modifiers
+	 private (by default),  protected (can be accessed by child class, friend function) , public
+	 
+	 CPP short constructor
+	 
+	 class Base{
+	    int x;
+		
+		public:
+		  Base(int x=0):x(x) {}
+	 }
+	 
+	 inheritance -> class child-class: access_mode base-class {};
+	 
+//Base class 
+class Parent 
+{ 
+    public: 
+      int id_p; 
+}; 
+   
+// Sub class inheriting from Base Class(Parent) 
+class Child : public Parent 
+{ 
+    public: 
+      int id_c; 
+}; 
+	
+	multiple inheritance:  
+class subclass_name : access_mode base_class1, access_mode base_class2, ....
+{
+  //body of subclass
+};
+
+    *****constructors are often defined outside of class ***
+	 https://stackoverflow.com/questions/35340908/why-constructors-need-scope-resolution-to-define-it-outside-the-body
+	 https://www.cplusplus.com/forum/beginner/61056/
+	 
+*** Class by default contains ***
+   1. blank constructor
+   2. blank destructor
+   3. copy constructor
+   4. assignment (=) operator
+
+--city Bank interview
+  - virtual pointer implementation
+         late binding known as virtual table
+		 *__vptr added to classes that has virtual method, 
+		      - it contains pointer to function of most derived version of function objects of that class can call
+		 https://www.learncpp.com/cpp-tutorial/the-virtual-table/
+		https://www.learncpp.com/cpp-tutorial/pure-virtual-functions-abstract-base-classes-and-interface-classes/
+		
+  - C++ diamond inheritance problem? how virtual functionality works here ?
+      using virtual inheritance for intermediate class, only last derived class will create concrete object with most base constructor
+	  depedency resolved using vtable
+	  otherwise 2 copies of base class come from intermediate classes
+	  
+      https://www.cprogramming.com/tutorial/virtual_inheritance.html
+  
+   - virtual constructor/destructor possible? -> constructor not possible, destructor possible
+      In C++, the constructor cannot be virtual, because when a constructor of a class is executed there is no virtual table in the memory, means no virtual pointer defined yet. So, the constructor should always be non-virtual.
+	 
+   	 Deleting a derived class object using a pointer of base class type that has a non-virtual destructor results in undefined behavior. To correct this situation, the base class should be defined with a virtual destructor
+	 https://stackoverflow.com/questions/7750280/how-does-virtual-destructor-work-in-c
+   
+
+	
+4) Overloading , 
+            same function name, multiple forms with different number of inputs or types of inputs, but return type should be same
+   dynamic polymorphysim
+            inherited virtual function, base class defined as child class, function accessed at runtime.
+			in C++ it is achieved thru virtual functions
+			
+    and how can we write interface in c++ :  -> using pure virtual functions
+	   virtual int func() = 0;   //makes function pure virtual, we can't instantiate object of such class
+	   
+	   https://stackoverflow.com/questions/99297/how-are-virtual-functions-and-vtable-implemented
+	   
+	 Operator overloading : operator keyword, constant reference of object
+	                        <return type> operator <opr> (<object type> const &obj) {}
+							
+							class person{
+							   public: 
+							           float age; string name;
+									   
+									   bool operator < (const person& per) {
+									       return age < per.age;
+									   }
+							}
+
+5) friend functions. 
+    -> friend function/class can access protected and private members of other class in which it is declared as friend
+ 
+6) reverse printing of single linked list w/o use of temp var
+    -> using recursive function, 
+	 void reverse_print(node *list){
+		if(list == NULL){
+			printf("[NULL] ->");
+			return;
+		}
+		
+		reverse_print(list->next);
+		printf(" %d -> ", list->data);
+    }
+	
+	/* Reverse linked list */
+	/* using 3 pointers */
+	   ListNode* reverseList(ListNode* head) {
+          /* iterative method */
+          ListNode* prev=NULL;
+          ListNode* curr=head;
+          ListNode* next=NULL;
+        
+          while(curr != NULL){
+              next=curr->next;
+              curr->next=prev;
+              prev=curr;
+              curr=next;
+          }
+          
+        return prev;
+	   }
+	
+7) scope of variables and fuction for access specifiers
+        private, public, protected (child class can access)
+
+8) templates in c++ :
+     Generic class
+        * Templates expand at compile time, works like macros, but type checks data type at compile time
+		* Templates are way to write generic programs
+		* the main point is to pass data type as parameter to function or class
+		   function templates, class templates
+		   
+		:syntax to create our own template
+		   template <typename T>
+		   T funct(T var){};
+		   
+		   template<typename T, Class U>
+		   class A{
+		     T x;
+			 U y;
+		   };
+		
+	STL : Standard template libraries -> set of template classes and built in functions/algorithms, iterator for DS as array, vector, stack, queue, MAP
+	   STL has three component ->  Containers, Iterators, Algorithms
+	   
+	   Headers : #include <algorithm> , #include <vector> , #include <numeric>, #include<set>, #include <list> , #include <iterator>  etc.
+	   
+	   Algorithms : sort, search, binary_search (requires sorting) , *max_element, *min_element, accumulate, upper_bound, lower_bound
+	   Containers: vector (dynamic array container),
+               	   list(doubly linked list), dequeue, arrays, forward_list (sequence containers)
+	               
+				   queue, priority_queue, stack  (containers adapter)
+				   
+				   set, multiset(duplicate value allowed), map, unordered_map, multimap(duplicate pair allowed)  (associative containers)
+				   
+				   )) array<int, 5> arr; //size - 5 is needed at compile time
+				   
+				   )) vector<int> arr;  -> dynamic array, this is array+ Linked list, capacity is increased as we keep on putting records
+				                           size(); - no. of elements present, 
+										   capacity() -> actual capacity assigned
+										   arr.reserve(100); //reserve size of arr, otherwise it keeps on increasing at runtime doubling each time element is inserted
+										   
+										   arr.push_back(10);
+				   
+				   )) set<int> s;  -> associative container, stores uniq keys in sorted order  , by default increasing, 
+				                          set<int, std::greater<>> = for descending -- #include<functional>
+				                      uses red-black tree for it = balanced BST  (https://www.geeksforgeeks.org/red-black-tree-set-1-introduction-2/)
+									  for user defined data -> we need to provide compare function (overload < (or >) of class)
+								
+								multiset<int> s;  --> can contain duplicate keys
+								s.insert(2);
+								
+						* map & set for user defined data type (class) needs comparator operator(<) overloaded , otherwise gives error
+						https://stackoverflow.com/questions/1102392/how-can-i-use-stdmaps-with-user-defined-types-as-key
+						
+				    )) map<int, string> mp;  -> key(uniq) value(can be duplicate) associate container, stored sorted using balanced BST
+					                           mp[10]="Amit";
+											   mp.insert(make_pair(20, "Amita"));
+											   
+											   ascending/descending similar to set, provide compare function (overload < (or >) of class) for user defined types
+											   map<int, string, std::greater<>>
+											   
+											   map<int , vector<int>> mp;
+											   
+											   mp[0].push_back(1000); mp[0].push_back(2000);
+											   mp[1].push_back(1001);
+											   
+											   for(auto &it: mp){
+											      cout<<it.first <<":";
+											      for(auto &it2: mp.second){
+												    cout<<it2<<" ";             //it will print 0:1000 2000   ...etc.  
+												  }
+											   }
+											   
+										Algo: find(), upper_bound(), lower_bound()
+                                              auto pair = mp.find(10);
+												cout<<pair->first<<" "<<pair->second<<endl;
+												
+					)) stack<int> st;  -> LIFO, internally uses deque STL , can't iterate over stack (& queue)
+					
+					             st.push(); st.pop(); if(!st.empty()) cout<<st.pop();
+								 
+					)) deque<>   -> double ended queue , indexed sequence container
+					                not stored contiguous
+									dynamically stored, but operation is less expensive than vector, it maintains array and when expanded creates another array and links it to existing one at end
+									size of array -> 8 times object size on 64 bit libstdc++ / 16 times 4096 bytes, whichever is larger
+									
+									random access [], insertion and removal at front & end O(1)
+									insertion and removal in between - O(n)
+									
+					                push_back(), push_front();  pop_back(), pop_front();
+									
+					)) list<int> lis = {5,4,-1,12,2};  
+					                list is actually doubly linked list
+									sequence container, allow non-contagious memory allocation
+									list is faster for access, insertion than vector, deque
+									   push_front(), pop_front(), push_back(),  reverse(), assign(), unique(), front(), back(), size()
+									   insert()
+									   list.sort()
+							
+							)) forward_list<int> lst;  -singly link list
+							
+					)) emplace() -> like insert for premitive data types = insert, *but for big classes its only create object with parameter using input parameter
+				   
+	    Iterator: iterator in object in C++ which points to element in container
+			
+    miscellaneous - 
+      #include <bits/stdc++.h>	 -> it should be used in time sensitive coding competition, it includes all standard cpp headers, once this is included
+	                                 another standalone should not be included
+									
+	***** stringstream *******
+	 stringstream ss(str);  // Used for breaking words   //works as stream for sequence of strings/sentence
+	 string word;
+	 
+	 while (ss >> word)
+	   wordFreq[word]++; or cout << word;
+	   
+	  *** int to sting ***
+	  int count=10;
+	  
+	  /* method 1 */
+	  osstringstream ostr;  
+	  ostr << count;
+	  string sCount = ostr.str();
+	  
+	  /* method 2 , c */
+	  char *intStr = itoa(count);
+       string str = string(intStr);
+	   
+	   /* method 3, c++ */
+	   string str=to_string(count);
+	  
+	  string to c style string (char*)
+	  https://www.geeksforgeeks.org/convert-string-char-array-cpp/
+	  https://www.geeksforgeeks.org/string-find-in-cpp/
+		
+9) convert string number to int number w/o using inbuilt functions
+
+    string num="100";
+   //using stringstream
+   stringstream ss(num);
+   int nn;
+   ss>>nn;
+   cout<<"1: n: "<<nn<<endl;
+   
+   //using function
+   int nn1;
+   nn1=stoi(num);
+
+10) Merging of linked list
+
+11) how to implement queue using stack / or stack using queue  --> on LeetCode
+
+12) Difference between TCP/ UDP
+
+14) what is buffer overflow
+
+15) what is resource management
+
+16) **Multithreading, process vs threads (##verify it once)
+      - THread is light weight process
+	  - Process has its own program counter, and own data segment/stack memory, its not shared with other process, one process has to finish to start another process sequentially in OS
+	  - Thread has its own PC, but shares data segment/stack memory with parent thread & other sibling threads, threads can run parallel to one another and hence are faster than process
+	    Threads can override data on stack as they share it, we need to use locking (mutex) mechanism to synchronize it , or semaphore
+		
+		C - pthread
+		
+		C++ - thread library
+		   thread(func, arg1, arg2 ..);
+		   
+		   mutex m;
+		   
+		   func(){ 
+		    m.lock();
+		     //operation
+		    m.unlock();
+		   }
+		   
+		   //or
+		   for( ;100ms;){
+		      if(m.try_lock()){
+			    //do stuff
+				m.unlock();
+			  }
+		   }
+		   
+	launch policy:
+	    std::launch::async
+		std::launch::deffered
+		
+		
+	Semaphores: are integer variables that are used to solve the critical section problem by using two atomic operations, wait and signal that are used for process synchronization.
+	https://www.tutorialspoint.com/semaphores-in-operating-system#:~:text=Semaphores%20are%20integer%20variables%20that,are%20used%20for%20process%20synchronization.&text=The%20wait%20operation%20decrements%20the,then%20no%20operation%20is%20performed.
+	
+	*** wait & signal ***
+	wait - decrements mutual variable till its 0, if 0 it waits, process/thread can then pick up data
+	signal - increments mutual variable when it add resource, 
+	(Binary semaphores - only 0 & 1)
+	Used for - consumer producer problem
+	
+	POSIX standard:
+		sem_init()
+		sem_open(), sem_close()
+		sem_wait()
+		sem_post()
+		sem_unlink()
+		
+		//in cnosumer
+		sem_t *sem_producer= sem_open(SEM_PRODUCER, IPC_CREAT, 0660, 0);  //(name, create macro, access, initialized to 0 so consumer waits)
+		sem_t *sem_consumer= sem_open(SEM_CONSUMER, IPC_CREAT, 0660, 1);  //( initialized to 1, so producer can access and continue)
+		
+		while(1){
+		  sem_wait(sem_producer);
+		  /*. do stuff,
+		  .  read on shared memory */
+		  sem_post(sem_consumer);
+		}
+		
+		sem_close(sem_consumer);
+		sem_close(sem_producer);
+		
+		//in producer
+        sem_t *sem_producer= sem_open(SEM_PRODUCER, 0);  //don't open new one just access
+		sem_t *sem_consumer= sem_open(SEM_CONSUMER, 0);  //don't open new one just access
+        
+		while(1){
+		    sem_wait(sem_consumer);
+			/*do stuff, 
+			  write on shared memory */
+			sem_post(sem_producer);
+		}
+		
+		sem_close(sem_consumer);
+		sem_close(sem_producer);
+
+
+17) DB connection in ProC , multiple connection
+
+19) File handling
+
+20) Bitwise operator :
+
+    even/odd : last bit is 0 = even, else 1= odd
+	
+	if( num & 1 ) { "odd" } else { "even" }
+	
+	shift operator >> equates to divide by 2,   << equates to multiply by 2 
+	why? 
+	  0  1 
+	 10  2   - shift left = 100 = 4
+	 11  3
+	100  4   - shift right = 010 = 2
+	101  5
+	110  6
+	111  7
+   1000  8
+   
+   2 << 1 = 4
+   4 >> 1 = 2
+   
+   xor, ^ to swap two numbers
+
+x = x ^ y
+y = x ^ y
+x = x ^ y
+   
+   /* to cound the bits in number */
+   while(n){
+     n=n & (n-1)
+	 count++;   
+   }
+   
+   https://www.techiedelight.com/brian-kernighans-algorithm-count-set-bits-integer/
+
+21) const char *ptr vs  char* const ptr vs const char const *ptr;
+     1. constant pointer, value can't be changed
+	 2. value being pointed can be changed, but poitner can't
+	 3. neither value nor pointer can be changed
+	 
+	 const int *ptr;
+	 int* const ptr;
+
+Shell scripting -
+ grep - how to grep multiple words
+     grep -e "wordA" -e "wordB" file
+	 grep -E "wordA|wordB" file
+	 egrep "wordA|wordB" file
+	   others:  -i to ignore case, -v to invert search
+ awk vs sed
+ psu , ps -ef
+   ps = list process, -e for all processes, f to details , -u <user> for user
+ 
+22) std::to_string(data_type i);  //method in c++ to convert data type into string
+
+23) smart pointers: - it is a class which wraps raw pointer, to manage the life time of pointer
+                    - the most fundamental job of smart pointers is to remove chances of memory leak
+					- it makes sure that object is deleted if object is not referenced anymore
+	Header file: #include <memory>
+	Types:
+	       unique_pointers - only one owner for object
+		                    std::unique_ptr<Foo> p(new Foo(10));            //Foo is class, Foo should have destructor
+							std::unique_ptr<Foo> p1= make_unique<Foo>(20);   //exception safety, exception will be handled in create operation
+							p->func(); or (*p).func();   //where func is function of Foo class
+		   
+		   shared_pointers - sharing object between owner
+		                   std::shared_ptr<Foo> sp(new Foo(10));     //Foo is class, Foo should have destructor
+						   std::shared_ptr<Foo> sp1(new Foo(10)); 
+						   
+						   cout << sp.use_count();  // = 2 
+		   weak_pointers - same as shared pointer but no counter
+		                   can't be independent work with weak pointer to break circular dependency or alias access
+		   
+		   auto_pointer
+		   
+	https://stackoverflow.com/questions/3697686/why-is-auto-ptr-being-deprecated 
+
+24) Padding, packing, segment and paging
+    - data into memory/RAM -> segment
+	- data into HD -> paging
+	- processor generates logical address
+	- padding -> add empty blocks inbetween two data to get in word/page size so processor can process in bulk
+	
+	struct example{ char a; char b; int i; };
+	                |a|a|-|-|i|i|i|i|      -> into size of 4
+					 0 1 2 3 4 5 6 7
+					 
+   
+Q))                                     ios
+    istream  -- input stream like cin             ostream -- output stream, like cout
+       |                                              |
+	ifstream -- input file stream                 ofstream -- output file stream
+	
+    https://www.cs.uic.edu/~jbell/CourseNotes/CPlus/FileIO.html#:~:text=A%20C%2B%2B%20stream%20is%20a,a%20general%20purpose%20output%20stream.
+	
+
+Q) difference between pointer & reference
+
+Pointers: A pointer is a variable that holds memory address of another variable. A pointer needs to be dereferenced with * operator to access the (value at) memory location it points to.
+
+References : A reference variable is an alias, that is, another name for an already existing variable. A reference, like a pointer, is also implemented by storing the address of an object.
+
+int i=3;
+int* p=&i;   //hold addr of int i  , *p=3 , p=0Xadr
+int &r=i;    //reference of i   , r=3
+
+
+
+Q) Q) static cast, dynamic cast? 
+    Casting:
+      static cast : int i = static_cast<int>(fVal);   //easy for search
+	                      compile time checking of legality
+                    int* i= static_cast<int*>(&fVal); //for memory
+					
+					void *v=static_cast<int*>(&i);   int *ip=static_cast<int*>(&v);
+					
+					https://www.cprogramming.com/tutorial/lesson11.html
+					
+	  Dynamic cast: only in inheritance of interface (virtual function in base class)
+	                 To find correct downcast, if wrong throws error incase of reference, null incase of pointer
+					 
+	  constant cast: must be used on constant pointer, used to remove constant property of pointer
+	                 int i=20;
+					 const int* cp= &i;
+					 int *ip=const_cast<int*> cp;
+					 *ip=30;   //valid
+					 
+	  reinterpret cast: can perform dangerous any pointer to another pointer conversion
+	                    does not type check source and destination pointer data check
+	            ClassA *ca = new ClassA();
+		        ClassB *cb= reinterpret_cast<ClassB*> (ca);
+					 
+Q) What is namespace?
+    
+Q) How to check linked libraries to binary -
+
+   ldd csmUBan   --dynamically linked libraries
+   
+Q) Pre-processor directives - which gives instructions to compiler to preprocess the information before actual compilation starts
+    #include<>   -- to copy header file contents in file
+	#define PI 3.14     -- creates symbolic constants
+	
+	#ifndef DEBUG
+	   #define DEBUG 1
+	#endif
+	
+	##    -- concats two tokens
+	#define CONCAT(x, y)  x ## y
+	
+Q) What is a copy constructor?
+A copy constructor is a member function which initializes an object using another object of the same class. A copy constructor has the following general function prototype:
+
+    ClassName (const ClassName &old_obj); 
+	
+	By default compiler provides, but we need to implement when there is pointer data member, otherwise it shallow copies pointer value.
+	
+Q) Move semantics: 
+     http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2027.html#Move_Semantics
+
+----
+Q)  Data structure -> way to store data/structuring data
+    Primitive/ built in -> int, float, char, pointer etc.
+	
+	Linear -> array, list, stack, queue
+	
+	Non-Linear -> Tree, Graph
+	
+	https://www.programiz.com/dsa/trees
+	https://www.programiz.com/dsa/perfect-binary-tree
+	https://www.programiz.com/dsa/binary-search-tree
+	
+	///
+	Array -> fixed DS, contigous allocation of memory , traversing is faster, inserting inbetween element is tedius
+	         takes more memory
+	LL -> dynamic DS, can grow and shrink at any time, efficient memory use, insertion deletion at any position is easy
+	      traversing is time consuming, if list is big, it takes huge memory
+    
+	linked list node
+
+typedef struct s_node{
+  int data;
+  struct s_node *next;
+}node;
+
+
+  **** in c++ ****
+  head = new node;  head->data=10;
+  node1 = new node;  node1->data=20;
+  head->next=node1;  node1->next=NULL;
+
+DOubly link list
+typedef struct d_node{
+   int data;
+   struct d_node *next;
+   struct d_node *prev;
+}dNode;
+
+C++
+Definition for singly-linked list.
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(NULL) {}
+	ListNode(int x, ListNode *next) : val(x), next(next) {}
+};
+	
+	#### Tree -> heirarchical, structural, very good for searching, insert/delete efficiently
+	       //C++ declaration
+			struct Binary{
+			   int data;
+			   Binary *left, *right;
+			   
+			   Binary(int data): data{data}, left{nullptr}, right{nullptr}{}
+			}bNode;
+	
+	    DFS -> Depth first search, go to the child nodes in depth -> *** implemented using stack ***
+		
+			void print_dfs(Binary *root){
+				if(root == nullptr) return;
+			
+				cout<<" "<<root->data<<" ";
+			
+				print_dfs(root->left);
+				print_dfs(root->right);
+			}
+	    
+		BFS	-> Breadth first search, go to next level check all child nodes, then next level, *** implemented using queue ***
+void printLevelOrder(Node *root)
+{
+    // Base Case
+    if (root == NULL)  return;
+ 
+    // Create an empty queue for level order traversal
+    queue<Node *> q;
+ 
+    // Enqueue Root and initialize height
+    q.push(root);
+ 
+    while (q.empty() == false)
+    {
+        // Print front of queue and remove it from queue
+        Node *node = q.front();
+        cout << node->data << " ";
+        q.pop();
+ 
+        /* Enqueue left child */
+        if (node->left != NULL)
+            q.push(node->left);
+ 
+        /*Enqueue right child */
+        if (node->right != NULL)
+            q.push(node->right);
+    }
+}
+ 
+// Utility function to create a new tree node
+Node* newNode(int data)
+{
+    Node *temp = new Node;
+    temp->data = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+	
+		Graph -> network structure, every tree is a graph, but no every graph is tree
+
+
+
+
+STL algorithms 
+  sort(a, a + asize);             //sort(startaddress, endaddress) 	  [startaddress,endaddress)
+  binary_search(a, a + 10, 2);   //binary_search(startaddress, endaddress, valuetofind)
+  
+  
+   // Initializing vector with array values 
+    int arr[] = {10, 20, 5, 23 ,42 , 15}; 
+    int n = sizeof(arr)/sizeof(arr[0]); 
+    vector<int> vect(arr, arr+n); 
+  
+  
+---socket programming in C
+--https://dzone.com/articles/parallel-tcpip-socket-server-with-multi-threading 
+
+Server: 
+ int sockfd, newsockfd, portno, clilen, pid;
+struct sockaddr_in serv_addr, cli_addr;
+
+create TCP socket
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+bind socket to server address
+   serv_addr.sin_family = AF_INET;   //AF_INET6 for IPv6
+     serv_addr.sin_addr.s_addr = INADDR_ANY;
+     serv_addr.sin_port = htons(portno);   //convert host IP to network layer IP
+     if (bind(sockfd, (struct sockaddr *) &serv_addr,
+              sizeof(serv_addr)) < 0)
+              error("ERROR on binding");
+
+//listen - put server packet in passive mode, wait for client connection
+   listen(sockfd,10);
+//accept - after connection is established
+   newsockfd = accept(sockfd,
+               (struct sockaddr *) &cli_addr, &clilen);
+     pid = fork();
+         if (pid < 0)
+             error("ERROR on fork");
+         if (pid == 0)  {
+             close(sockfd);
+             dostuff(newsockfd);
+             exit(0);
+         }
+		 
+in child dostuff, read and write
+   n = read(sock,buffer,255);    //send in linux
+   n = write(sock,"I got your message",18);   //recv in linux
+
+Client: 
+ 
+    int sockfd, portno, n;
+
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+Create socket
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+connect to server portno
+   server = gethostbyname(argv[1]);
+       bzero((char *) &serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    bcopy((char *)server->h_addr,
+         (char *)&serv_addr.sin_addr.s_addr,
+         server->h_length);
+    serv_addr.sin_port = htons(portno);
+
+    if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
+        error("ERROR connecting");
+
+     n = write(sockfd,buffer,strlen(buffer));     //send in linux
+	 
+	bzero(buffer,256);
+    n = read(sockfd,buffer,255);    //recv in linux
+
+
+
+######### Design patterns ########
+
+   Factory:
+     Factory method creates object for based on input requirement, implemented using interface (pure virtual function)
+	 
+   Builder:
+      To Create complex objects step by step
+	   create abstract class which has methods to create object,
+	   create required builder classes - inherit abstract class, implements actual methods
+	   create driver - which calls required builder class, and return object
+	   
+	Prototype:
+	   copy the object - because its less expensive than creating new
+	   when frequency of same object is high
+	    interface method clone -> create object implement clone method
+		
+		virtual unique_ptr<Bullet> cline() = 0;
+		
+		uniq_ptr<Bullet> clone() override
+		{
+		    return make_unique<SimpleBullet>(*this);
+		}
+		
+	Observer: 
+          producer - consumer	
+		  
+	Visitor: Behavioral Design pattern
+	          works as producer - consumer only, visitor - visit() visitable class, and visitable accept() data/info
+			  
+	Decorators: is a structural pattern that allows adding new behaviors to objects dynamically by placing them inside special wrapper objects.
+	            *standard in c++
+				https://refactoring.guru/design-patterns/decorator/cpp/example
+		  
+		  
+-----------  -----
+
+---- EdgeVerve Question -----
+https://www.techiedelight.com/find-size-largest-square-sub-matrix-1s-present-given-binary-matrix/ 
+ 
+ 
+ ---- Cognizant: ----
+ 
+     why is auto_pointer deprecated?
+		   
+	https://stackoverflow.com/questions/3697686/why-is-auto-ptr-being-deprecated 
+ 
+ why we cant create object of Abstract class?
+ virtual pointer table?
+ Singleton class - how to synchronize it instantiation in thread locking, making sure only one thread can create.
+ 
+Q) Stack Unwinding in C++?
+    - related to exception handling cascading
+	- CPP removes the entries of function from function stack at runtime after exception is happened, and inner functions have not handled it
+ 
+Q) What is move semantics?
+   - https://stackoverflow.com/questions/3106110/what-is-move-semantics
+   - https://www.internalpointers.com/post/c-rvalue-references-and-move-semantics-beginners
+ 
+Q) Exceptions - how they are handled, uncaught exceptions
+
+ try {
+      cout << "Inside try \n";
+      if (x < 0)
+      {
+         throw x;
+         cout << "After throw (Never executed) \n";
+      }
+   }
+   catch (int x ) {
+      cout << "Exception Caught \n";
+   }
+   
+   You can define your own exceptions by inheriting and overriding exception class functionality.
+   #include <exception>
+   
+   catch(exception& e){ cout<<e.what();}  //base exception class
+   catch(...){ }  //catches all default exceptions
+   
+----- WGS questions ----
+parametarized constructor, then create array of object of class
+Deep copy, shallow copy , copy constructor, move semantics
+dynamic_cast<> , 
+smart pointer?
+ object slicer? gtest?
+ https://www.geeksforgeeks.org/object-slicing-in-c/
+ 
+ ####### shell scripting ###########
+ Q) grep, find, files older than certain days
+  
+     find . -name "client*" -size +10 -mtime +10
+	 =find file name like "client*", whose size is greater than 10 blocks, and was modified for more than (+10) days ago
+ 
+ Q) preposition parameters, ./shell var1 var2 var3 ...  , access using $1, $2, $3
+ 
+ Q) awk, sed
+ 
+     sed -i 's/word/words/' sample.txt  -- -i option replaces the file, s for replace pattern
+	 sed -i '/words/d' sample.txt      -- delete word
+  
+    awk '{ print $1 $3 ; }' fruit_prices.txt
+#!/bin/sh
+awk '
+/ *\$[1-9][0-9]*\.[0-9][0-9] */ { print $1,$2,$3,"*"; }
+/ *\$0\.[0-9][0-9] */ { print ; }
+' fruit_prices.txt
+Here
+ 
+ Q) while vs for in shell
+ 
+    for i in arr 
+	do
+	    i++
+	done
+ 
+ Q) check disk space/occupied space
+    df -kh
+	du -shc ./*    ---size of files in current directory
+	du -shc ./* | sort -nr | less
+ 
+ ######## PL/SQL ###############
+ Q) indexes? primary keys? joins?
+
+--Look up functionality 
+--at the time of table creation, or later
+CREATE INDEX index_name
+on table_name (column1, column2);   --single index/composite index
+
+DROP INDEX index_name;
+
+--primary key used to uniquly identify record, by default indexed
+--at the time of table creation or later
+ALTER TABLE Customer ADD PRIMARY KEY (id);   --single or composite key
+
+--aggregate functions 
+  min, max, sum, avg, count
+
+--at the time of table creation
+CREATE TABLE `members_indexed` (
+  `membership_number` int(11) NOT NULL AUTO_INCREMENT,
+  `full_names` varchar(150) DEFAULT NULL,
+  `gender` varchar(6) DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `physical_address` varchar(255) DEFAULT NULL,
+  `postal_address` varchar(255) DEFAULT NULL,
+  `contact_number` varchar(75) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`membership_number`),INDEX(full_names)   --key and index#######
+) ENGINE=InnoDB;
+
+ 
+
+ Q) Function vs Stored procedure
+    https://www.guru99.com/subprograms-procedures-functions-pl-sql.html
+	
+	  Parameters - IN, OUT, IN OUT
+	  
+	  Procedure - subporogram, sequence of PL/SQL statements, must be uniq name
+	              compiled and stored as DB object
+				  Can't return value
+				  Can't be called from SELECT statement
+CREATE OR REPLACE PROCEDURE welcome_msg (p_name IN VARCHAR2) 
+IS
+BEGIN
+dbms_output.put_line (‘Welcome '|| p_name);
+END;
+/
+EXEC welcome_msg (‘Guru99’);
+ 
+      Function - like procedure, uniq name, but light weight used for quick calculations
+	              has  RETURN keyword, must return some value/parameter, Function can also return the value through OUT parameters 
+				  calling part must assign some variable to hold returned value
+				  Function not having DML statements can be called from SELECT statement
+CREATE OR REPLACE FUNCTION welcome_msgJune ( p_name IN VARCHAR2) 
+RETURN VARCHAR2
+IS
+BEGIN
+RETURN (‘Welcome ‘|| p_name);
+END;
+/
+
+DECLARE
+lv_msg VARCHAR2(250);
+BEGIN
+lv_msg := welcome_msg_func (‘Guru99’);
+dbms_output.put_line(lv_msg);
+END;
+
+SELECT welcome_msg_func(‘Guru99:) FROM DUAL;
+
+ Q) Trigger - what is it?
+    https://www.guru99.com/triggers-pl-sql.html#:~:text=What%20is%20Trigger%20in%20PL,defined%20as%20per%20the%20requirement.
+	
+	TRIGGERS are stored programs that are fired by Oracle engine automatically when DML Statements like insert, update, delete are executed on the table or some events occur. The code to be excecuted in case of a trigger can be defined as per the requirement. 
+	
+	Types: timing based - BEFORE, AFTER , INSTEAD OF
+	       classificatino - STATEMENT level, ROW level
+		   DML - on INSERT, UPDATE, DELETE
+		   DDL - on Create , alter
+		   DATABASE Logging - LOGON, LOGOFF, START, SHUTDOWN
+		   
+CREATE [ OR REPLACE ] TRIGGER <trigger_name> 
+[BEFORE | AFTER | INSTEAD OF ]
+[INSERT | UPDATE | DELETE......]
+ON<name of underlying object>
+[FOR EACH ROW] 
+[WHEN<condition for trigger to get execute> ]
+DECLARE
+<Declaration part>
+BEGIN
+<Execution part> 
+EXCEPTION
+<Exception handling part> 
+END;
+ 
+ Q) what is cursor -> Oracle pointer to context area of SQL result/statements
+        IMPLICIT cursor - DML operations on DB create cursor internally, programmer can't use it
+		EXPLICIT cursor - programmer create cusror on SELECT statement and names it, can use and control it
+	
+	DECLARE CURSOR <cur_name>
+	         Select * from table;
+	
+	OPEN  <cur_name>;
+	
+	FETCH <cur_name> INTO <data_set_variable>;   --variable can be single, or array to get multiple rows
+	
+	CLOSE <cur_name>;
+    
+ 
+ Q) ProC
+ 
+dgn_connect - connect to DB 
+               EXEC SQL CONNECT :sqli_username IDENTIFIED BY :sqli_password
+                                              USING :sqli_db_instance ;
+
+dgn_release - disconnect DB
+                EXEC SQL COMMIT WORK RELEASE;
+
+run query - 
+                EXEC SQL BEGIN DECLARE SECTION; 
+				   short var;
+				   char emp_name[21];
+				 EXEC SQL END DECLARE SECTION;
+				 
+				 move c to PC	;
+				 
+				  EXEC SQL
+				     select var_col, 
+					   into :var
+					  From table
+					  Where condition;
+
+                  switch(SQLCODE) {}  //error handling
+				  
+                  move pc :var into c var;
+				  
+				  
+				const int *var
+
+-- function overloading how operate				
+-- https://www.geeksforgeeks.org/stdallocator-in-cpp-with-examples/
+
+
+---miscellaneous
+ Q) backtracking problem:
+    
+     https://leetcode.com/problems/binary-watch/discuss/980507/C%2B%2B-or-easy-peasy 
+	 https://stackoverflow.com/questions/4678333/n-n-1-what-does-this-expression-do#:~:text=n%20%26%20(n%2D1)%20helps%20in%20identifying%20the%20value,power%20of%202%20or%200.%20%E2%80%93
+	 
+	 https://stackoverflow.com/questions/7594508/modulo-operator-with-negative-values
+	 
+
+--city Bank - answers are above in OOPs
+  - virtual pointer implementation
+
+  - C++ diamond inheritance problem? how virtual functionality works here ?
+  
+   - virtual constructor/destructor possible? -> constructor not possible, destructor possible
+   
+   Unique constraint vs primary key
+   https://www.w3schools.com/sql/sql_unique.asp
+     primary key can only be one, unique can be applied on multiple columns
+	 
+
+misc
+--- Signals in C ---
+   SIGINIT, SIGTERM, SIGKILL
+   
+  https://www.techiedelight.com/convert-given-number-corresponding-excel-column-name/
+
+
+L&T Infotech
+1. What if virtual keyword defined in derived class
+2. What is specialized session template
+3. SQL case statement
+	   
