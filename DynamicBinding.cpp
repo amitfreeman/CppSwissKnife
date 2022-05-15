@@ -13,6 +13,8 @@ class base
    
     void show () 
     { cout<< "show base class" <<endl; } 
+
+    virtual ~base(){ cout<<"virtual dest called!"<<endl; }
 };
 
 class derived:public base

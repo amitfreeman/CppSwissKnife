@@ -16,6 +16,8 @@ class Shape {
       void setHeight(int h) {
          height = h;
       }
+
+      virtual ~Shape(){  }
    
    protected:
       int width;

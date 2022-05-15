@@ -14,7 +14,7 @@ Q 1) diff between static var and functions in C and C++ and JAVA
 
 		: Functions
 		- by default functions are global, 
-		- by declaring them 'static' we restrict scope to the file only where they are declared
+		- by declaring them 'static' we restrict scope to the file only in file where they are declared
 		
 -> in C++ : variables
          - in Function -> it gets allocated for lifetime of program, is allocated/initialized only once first time, and value gets carried forward from previous cycle
@@ -64,7 +64,7 @@ Q 2) dynamic memory
 	1. new - allocate new memory block
 	   Syntax:  pointer = new data-type;   //data-type can built in data type or user defined like structure or class
 	   usage:
-	      a) int *ptr=NULL; ptr=new int;
+	      a) int *ptr=nullptr; ptr=new int;
 		     int *ptr=new int;
 			
 		  b) int *ptr=new(10); //initialize value of p to 10
@@ -167,11 +167,18 @@ class subclass_name : access_mode base_class1, access_mode base_class2, ....
 	  otherwise 2 copies of base class come from intermediate classes
 	  
       https://www.cprogramming.com/tutorial/virtual_inheritance.html
+
+      class transmitter: public virtual storable   //virtual inheritance 
+      {
+        public:
+        void read();
+        ...
+      } 
   
    - virtual constructor/destructor possible? -> constructor not possible, destructor possible
       In C++, the constructor cannot be virtual, because when a constructor of a class is executed there is no virtual table in the memory, means no virtual pointer defined yet. So, the constructor should always be non-virtual.
 	 
-   	 Deleting a derived class object using a pointer of base class type that has a non-virtual destructor results in undefined behavior. To correct this situation, the base class should be defined with a virtual destructor
+   	 Deleting a derived class object using a pointer of base class type that has a non-virtual destructor results in undefined behavior, because it doesn't call Derived calss destructor. To correct this situation, the base class should be defined with a virtual destructor
 	 https://stackoverflow.com/questions/7750280/how-does-virtual-destructor-work-in-c
    
 
@@ -257,7 +264,7 @@ class subclass_name : access_mode base_class1, access_mode base_class2, ....
 	   
 	   Headers : #include <algorithm> , #include <vector> , #include <numeric>, #include<set>, #include <list> , #include <iterator>  etc.
 	   
-	   Algorithms : sort, search, binary_search (requires sorting) , *max_element, *min_element, accumulate, upper_bound, lower_bound
+	   Algorithms : sort, search, binary_search (requires sorting), *max_element, *min_element, accumulate, upper_bound, lower_bound
 	   Containers: vector (dynamic array container),
                	   list(doubly linked list), dequeue, arrays, forward_list (sequence containers)
 	               
@@ -771,7 +778,7 @@ bind socket to server address
 //accept - after connection is established
    newsockfd = accept(sockfd,
                (struct sockaddr *) &cli_addr, &clilen);
-     pid = fork();
+         pid = fork();
          if (pid < 0)
              error("ERROR on fork");
          if (pid == 0)  {
