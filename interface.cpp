@@ -57,5 +57,43 @@ int main(void) {
    // Print the area of the object.
    cout << "Total Triangle area: " << Tri.getArea() << endl; 
 
+   /* static cast */
+   int i=10;
+   float f=12.22;
+   i=static_cast<int>(f);  // like i=(int)f;
+   cout<<"i:"<<i<<endl;
+   void *v=static_cast<int*>(&i);
+
+   /* Dynamic cast */
+   Shape *shape1;
+   Rectangle *square=new Rectangle();
+   Triangle  *triangle;
+
+   /* shape points to Rectangle */
+   shape1 = dynamic_cast<Shape*>(square);
+   if(shape1)
+      cout<<"success dynamic cast 1"<<endl;
+   else
+      cout<<"failure dynamic cast 1"<<endl;
+
+   /* base class contains Rectangle object,
+      conversion to Triangle object pointer not correct */
+   triangle = dynamic_cast<Triangle*>(shape1);
+   if(triangle)
+      cout<<"success dynamic cast 2"<<endl;
+   else
+      cout<<"failure dynamic cast 2"<<endl;
+
+   /* make it point to Triangle */
+   shape1=dynamic_cast<Shape*>(&Tri);
+
+   /* base class now contains Triangle object,
+      conversion successful */
+   triangle = dynamic_cast<Triangle*>(shape1); 
+   if(triangle)
+      cout<<"success dynamic cast 3"<<endl;
+   else
+      cout<<"failure dynamic cast 3"<<endl;
+
    return 0;
 }

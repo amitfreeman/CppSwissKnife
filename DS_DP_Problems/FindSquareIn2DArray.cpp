@@ -131,7 +131,7 @@ int main() {
 
     max_size=findLargestSquareDP(mat);
 
-    cout << "The size of largest square sub-matrix of 1's is " << max_size;
+    cout << "The size of largest square sub-matrix of 1's is: " << max_size <<endl;
 
     return 0;
 
