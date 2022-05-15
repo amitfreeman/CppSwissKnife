@@ -34,7 +34,7 @@ class String{
   ~String(){
       cout<<"Destruct: "<<this->m_buffer<<endl;
       if(m_buffer)
-         delete m_buffer;
+         delete[] m_buffer;
   }
 
   friend ostream& operator<< (ostream& stream, const String& str);
