@@ -20,11 +20,19 @@ class String{
 
    //String(const String& copy) = delete;  /* to not allow copying of object */
 
+  /* copy constructor */
   String(const String& copy){
        cout<<"copy String!!"<<copy.m_buffer<<endl;
        m_size=copy.m_size;
        m_buffer=new char[m_size];
        memcpy(m_buffer, copy.m_buffer, m_size+1);
+  }
+
+  void operator=(String& str){
+     cout<<"Assignment operator called by : "<<this->m_buffer<<endl;
+     m_size=str.m_size;
+     m_buffer=new char[m_size];
+     memcpy(m_buffer, str.m_buffer, m_size+1);
   }
 
   char& operator [] (unsigned int index) {
@@ -48,6 +56,7 @@ ostream& operator<< (ostream& stream, const String& str){
 
 int main(){
 
+  try{
     String string="Van Gough";
     String second = string;
 
@@ -56,6 +65,15 @@ int main(){
 
     cout<< string <<endl;
     cout<< second <<endl;
+
+    String third="third";
+    cout<< third <<endl;
+    third=string;
+    cout<< third <<endl;
+   }
+   catch(exception e){
+       cout<<e.what()<<endl;
+   }
     
     cout<<"---FINISH---"<<endl;
     return 0;
