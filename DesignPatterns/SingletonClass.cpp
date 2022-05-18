@@ -12,6 +12,9 @@ class Singleton {
       data = 0;
    }
 
+   Singleton(const Singleton& obj) = delete;
+   Singleton operator=(const Singleton& obj) = delete;
+
    public:
    static Singleton *getInstance() {
       if (!instance)

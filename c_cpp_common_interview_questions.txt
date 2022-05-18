@@ -397,6 +397,9 @@ class subclass_name : access_mode base_class1, access_mode base_class2, ....
 15) what is resource management
 
 16) **Multithreading, process vs threads (##verify it once)
+
+https://www.educative.io/courses/modern-cpp-concurrency-in-practice-get-the-most-out-of-any-machine/m2qROkznnPr 
+
       - THread is light weight process
 	  - Process has its own program counter, and own data segment/stack memory, its not shared with other process, one process has to finish to start another process sequentially in OS
 	  - Thread has its own PC, but shares data segment/stack memory with parent thread & other sibling threads, threads can run parallel to one another and hence are faster than process
@@ -424,6 +427,9 @@ class subclass_name : access_mode base_class1, access_mode base_class2, ....
 		   }
 
           t.join(); //in main program to stop main thread before sub thread t finishes
+          t.detach();  //detach from main thread
+
+          if both not used, thread will terminate upon main program exit
 		   
 	launch policy:
 	    std::launch::async
