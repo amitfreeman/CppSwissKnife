@@ -405,7 +405,7 @@ class subclass_name : access_mode base_class1, access_mode base_class2, ....
 		C - pthread
 		
 		C++ - thread library
-		   thread(func, arg1, arg2 ..);
+		   thread t(func, arg1, arg2 ..);
 		   
 		   mutex m;
 		   
@@ -422,6 +422,8 @@ class subclass_name : access_mode base_class1, access_mode base_class2, ....
 				m.unlock();
 			  }
 		   }
+
+          t.join(); //in main program to stop main thread before sub thread t finishes
 		   
 	launch policy:
 	    std::launch::async
@@ -819,6 +821,8 @@ connect to server portno
 
 
 ######### Design patterns ########
+
+https://refactoring.guru/design-patterns/cpp
 
    Factory:
      Factory method creates object for based on input requirement, implemented using interface (pure virtual function)

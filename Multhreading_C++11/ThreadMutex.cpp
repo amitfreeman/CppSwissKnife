@@ -10,7 +10,7 @@
 #include <mutex>
 using namespace std;
 
-int amount=0;
+int amount=100;
 int counter=0;
 mutex m;  //declare mutex variable
 
@@ -26,15 +26,16 @@ void addMoney(){
 	 * return true if it can, otherwise return false and let
 	 * program continue, non-blocking
 	 */
-	for(int i=0; i<100; i++){
+	for(int i=0; i<10; i++){
 		if(m.try_lock()){
 			++counter;
-			cout<<"\nI incremented counter now"<<endl;
-			this_thread::sleep_for( chrono::milliseconds(10) );
+			cout<<"\nThread id: "<<this_thread::get_id()<<" incremented counter now"<<endl;
+			this_thread::sleep_for( chrono::milliseconds(20) );
 			m.unlock();
 		}
 		else{
-            cout<<"\nI Can't lock, doing something else..."<<endl;
+            cout<<"\nThread id: "<<this_thread::get_id()<<" Can't lock, doing something else..."<<endl;
+			this_thread::sleep_for( chrono::milliseconds(10) );
 		}
 	}
 }
@@ -46,6 +47,9 @@ int main() {
 	thread t1(addMoney);
 	thread t2(addMoney);
 
+    /* join acts as wait
+	   main thread waits till calling 
+	   thread is finished, & joins main thread */
 	t1.join();
 	t2.join();
 
