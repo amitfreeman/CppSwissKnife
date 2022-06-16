@@ -641,7 +641,12 @@ A copy constructor is a member function which initializes an object using anothe
 	By default compiler provides, but we need to implement when there is pointer data member, otherwise it shallow copies pointer value.
 	
 Q) Move semantics: 
+
+     https://www.youtube.com/watch?v=fbYknr-HPYE 
      http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2027.html#Move_Semantics
+
+     & -> lvalue reference , lvalue has memory sotrage
+     && -> rvalue reference, rvalue is expression which results in value to be sotred, or constant
 
 ----
 Q)  Data structure -> way to store data/structuring data
@@ -1017,6 +1022,19 @@ END;
 
 SELECT welcome_msg_func(‘Guru99:) FROM DUAL;
 
+******** Find second, third highest salary **********
+https://www.geeksforgeeks.org/find-nth-highest-salary-table/
+
+select * from(
+select ename, sal, dense_rank() 
+over(order by sal desc)r from Employee) 
+where r=&n;
+
+To find to the 2nd highest sal set n = 2
+To find 3rd highest sal set n = 3 and so on.
+
+----------------------------------
+
  Q) Trigger - what is it?
     https://www.guru99.com/triggers-pl-sql.html#:~:text=What%20is%20Trigger%20in%20PL,defined%20as%20per%20the%20requirement.
 	
@@ -1123,3 +1141,4 @@ L&T Infotech
 2. What is specialized session template
 3. SQL case statement
 	   
+
