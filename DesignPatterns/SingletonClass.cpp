@@ -15,6 +15,9 @@ class Singleton {
    Singleton(const Singleton& obj) = delete;
    Singleton operator=(const Singleton& obj) = delete;
 
+   ~Singleton(){
+   }
+
    public:
    static Singleton *getInstance() {
       if (!instance)
@@ -28,6 +31,11 @@ class Singleton {
 
    void setData(int data) {
       this -> data = data;
+   }
+
+   static void releaseInstance(){
+      if(instance)
+        delete instance;
    }
 };
 
@@ -43,6 +51,8 @@ int main(){
 
    Singleton *s1= s->getInstance();
    cout<<"s1 Data = "<< s1->getData() << endl;
+
+   s->releaseInstance();
 
    return 0;
 }

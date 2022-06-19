@@ -14,7 +14,7 @@ class base
     void show () 
     { cout<< "show base class" <<endl; } 
 
-    virtual ~base(){ cout<<"virtual dest called!"<<endl; }
+    virtual ~base(){ cout<<"virtual destruct called!"<<endl; }
 };
 
 class derived:public base
@@ -38,7 +38,7 @@ int main()
    bptr->print();
    
    //non virtual function
-  bptr->show();
+   bptr->show();
    
    return 0;
 }

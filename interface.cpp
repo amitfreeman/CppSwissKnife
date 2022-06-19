@@ -9,6 +9,11 @@ class Shape {
    public:
       // pure virtual function providing interface framework.
       virtual int getArea() = 0;
+      /*int getArea(){
+          cout<<"Shape getArea()"<<endl;
+       } ;*/  
+       //without virtual, no runtime linking, function defined in class for respective object will be called
+
       void setWidth(int w) {
          width = w;
       }
@@ -30,6 +35,17 @@ class Rectangle: public Shape {
       int getArea() { 
          return (width * height); 
       }
+
+      virtual void funcR(){
+         cout<<"virtual in Derived class Rectangle!"<<endl;
+      }
+};
+
+class Exmperiment: public Rectangle{
+   public:
+      void funcR(){
+        cout<<"In Experiment class!"<<endl;
+     }
 };
 
 class Triangle: public Shape {

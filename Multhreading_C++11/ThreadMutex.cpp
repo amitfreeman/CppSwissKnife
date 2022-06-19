@@ -50,8 +50,10 @@ int main() {
     /* join acts as wait
 	   main thread waits till calling 
 	   thread is finished, & joins main thread */
-	t1.join();
-	t2.join();
+	if(t1.joinable())
+	  t1.join();
+	if(t1.joinable())  
+	  t2.join();
 
 	cout<<"\nAfter threads amount: "<<amount<<endl;
 	cout<<"After threads count: "<<counter<<endl;
