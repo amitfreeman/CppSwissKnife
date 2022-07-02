@@ -4,7 +4,10 @@ class Test{
   int i;
   int &r;  //reference needs to be initialized in initilizer list
   const int c; //same for constant
-public:
+  
+  public:
+   static int si;
+   static const int sci=101;  //has to be declared & defined at same time
 
   Test(): i(0), r(r), c(-1)
   {
@@ -12,6 +15,7 @@ public:
        std::cout<<"i="<<i<<std::endl;
        std::cout<<"r="<<r<<std::endl;
        std::cout<<"c="<<c<<std::endl;
+       si++;
   }
 
   Test(int in, int& ref,  int con): i(in), r(ref), c(con)
@@ -23,6 +27,7 @@ public:
        std::cout<<"i="<<i<<std::endl;
        std::cout<<"r="<<r<<std::endl;
        std::cout<<"c="<<c<<std::endl;
+       si++;
   }
 
  void  printTest();
@@ -31,6 +36,8 @@ public:
 void Test::printTest(){
     std::cout<<"printing"<<std::endl<<"i="<<i<<", r="<<r<<", c="<<c<<std::endl;
 }
+
+int Test::si=0;
 
 int main(){
     int n=20;
@@ -41,5 +48,9 @@ int main(){
     
     Test t1;
     t1.printTest();
+
+    std::cout<<"si="<<Test::si<<std::endl;
+    std::cout<<"si="<<Test::sci<<std::endl;
+
     return 0;
 }
