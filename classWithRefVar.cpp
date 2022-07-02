@@ -4,16 +4,16 @@ class Test{
   int i;
   int &r;  //reference needs to be initialized in initilizer list
   const int c; //same for constant
+  static int si;
+  static const int sci=101; //has to be declared & defined at same time
   
   public:
-   static int si;
-   static const int sci=101;  //has to be declared & defined at same time
-
-  Test(): i(0), r(r), c(-1)
+   
+  Test(): i(0), r(i), c(-1)
   {
        std::cout<<"--Default constructor--"<<std::endl;
        std::cout<<"i="<<i<<std::endl;
-       std::cout<<"r="<<r<<std::endl;
+       //std::cout<<"r="<<r<<std::endl;
        std::cout<<"c="<<c<<std::endl;
        si++;
   }
@@ -31,6 +31,14 @@ class Test{
   }
 
  void  printTest();
+
+    static int getsi(){
+        return Test::si;
+    }
+
+    static int getsci(){
+        return Test::sci;
+    }
 };
 
 void Test::printTest(){
@@ -49,8 +57,8 @@ int main(){
     Test t1;
     t1.printTest();
 
-    std::cout<<"si="<<Test::si<<std::endl;
-    std::cout<<"si="<<Test::sci<<std::endl;
+    std::cout<<"si="<<Test::getsi()<<std::endl;
+    std::cout<<"sci="<<Test::getsci()<<std::endl;
  
     std::cout<<"--- Constant value pointer ---"<<std::endl;
     int rand=10;
