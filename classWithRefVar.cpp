@@ -51,6 +51,25 @@ int main(){
 
     std::cout<<"si="<<Test::si<<std::endl;
     std::cout<<"si="<<Test::sci<<std::endl;
+ 
+    std::cout<<"--- Constant value pointer ---"<<std::endl;
+    int rand=10;
+    int rand1=11;
+    const int *i;  //constant value
+    i=&rand;
+    std::cout<<"i="<<i<<", *i="<<*i<<std::endl;
+    //*i=11;  //illegal
+    i=&rand1;  //pointer itself can be changed
+    std::cout<<"After change, i="<<i<<", *i="<<*i<<std::endl;
+
+    std::cout<<"--- Constant pointer ---"<<std::endl;
+    int* const ip=&rand; //constant pointer, need initilization
+    std::cout<<"ip="<<ip<<", *ip="<<*ip<<std::endl;
+    //ip=&rand1; //illegal
+    *ip=21;
+    std::cout<<"After change, ip="<<ip<<", *ip="<<*ip<<std::endl;
+
+   // const int const *ipc=&rand; //double const not allowed
 
     return 0;
 }

@@ -5,7 +5,6 @@
 #include <set>
 #include <imits>*/
 
-
 using namespace std;
 
 bool rev_func(int x, int y){
@@ -188,7 +187,6 @@ void mapDemo(){
        cout<<it->first <<":\t"<< it->second <<endl;
    }
    
-
    //stringstream - stream of strings
    cout<<"\nusing stringstream to count frequency of strings in stream"<<endl;
    map<string, int> ms;
@@ -204,8 +202,6 @@ void mapDemo(){
    for(auto it=ms.begin(); it!=ms.end(); it++){
        cout<<it->first <<":\t"<< it->second <<endl;
    }
-   
-
 }
 
 /* power of STL */
