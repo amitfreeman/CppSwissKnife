@@ -1,6 +1,7 @@
 some base - https://www.indeed.com/career-advice/interviewing/cpp-interview-questions
           - 
 		  
+	https://www.toptal.com/c-plus-plus/interview-questions
 ###############################################
 
 Memory allocation of program

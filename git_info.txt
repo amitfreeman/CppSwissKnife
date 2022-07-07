@@ -1,0 +1,52 @@
+git flow:
+
+ local workspace -->  staging  --> branch local   ---> remote repository
+               git add       git commit           git push
+
+git basic commands:
+
+ ---- show git branch history
+  git log --pretty=oneline
+  git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+  git log --graph --pretty=format:'%h %an, %ar %s'  //most decent one
+
+ ----
+
+git init  //initializes new reop
+
+git clone <url>  
+//clone the remote repository in local
+
+git fetch
+//fetch the remote files
+
+git status
+//check status
+
+git pull  //pull the online repository changes = fetch+merge+checkout
+
+git add <filename>
+git add -A  //for all files
+
+git commit -m <message>
+
+git push
+
+git checkout <filename>  //undo file changes in local
+git checkout <branch>
+
+git branch  //show current branch in working
+
+git merge  //combine changes from 2 diff branches
+
+.gitignore  //special file to ignore/exclude not needed files
+
+git switch  //switch to version, -b option checkout & point to branch
+
+
+Visual Studio code shortcuts:
+
+ctrl + P - command pallete
+
+>command
+@
