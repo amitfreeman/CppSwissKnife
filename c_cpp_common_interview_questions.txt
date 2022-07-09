@@ -60,7 +60,8 @@ Q 2) dynamic memory
 		 Example: ptr=realloc(ptr, 20*sizeof(int));
    
    in C++:
-      malloc, calloc can be used, but recommended to use new (& delete) as it create new object space which is concept of OOPs
+      malloc, calloc can be used, but recommended to use new (& delete) as it create new object space which is concept of OOPs,calls constructor & such.
+
 	
 	1. new - allocate new memory block
 	   Syntax:  pointer = new data-type;   //data-type can built in data type or user defined like structure or class
@@ -435,7 +436,17 @@ https://www.educative.io/courses/modern-cpp-concurrency-in-practice-get-the-most
 	launch policy:
 	    std::launch::async
 		std::launch::deffered
-		
+
+
+   ----- lock_guard<std::mutex> lock(mtx) ----
+template <class Mutex> class lock_guard;
+
+Lock guard
+A lock guard is an object that manages a mutex object by keeping it always locked.
+
+On construction, the mutex object is locked by the calling thread, and on destruction, the mutex is unlocked. It is the simplest lock, and is specially useful as an object with automatic duration that lasts until the end of its context. In this way, it guarantees the mutex object is properly unlocked in case an exception is thrown.
+
+		https://embeddedartistry.com/blog/2017/05/17/creating-a-circular-buffer-in-c-and-c/
 		
 	Semaphores: are integer variables that are used to solve the critical section problem by using two atomic operations, wait and signal that are used for process synchronization.
 	https://www.tutorialspoint.com/semaphores-in-operating-system#:~:text=Semaphores%20are%20integer%20variables%20that,are%20used%20for%20process%20synchronization.&text=The%20wait%20operation%20decrements%20the,then%20no%20operation%20is%20performed.
