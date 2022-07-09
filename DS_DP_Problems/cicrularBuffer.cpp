@@ -9,14 +9,17 @@
 #include <mutex>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <memory>
 
-/* Functionality provided for circular buffer 
- *  Adding data
-    Removing data
-    Checking full/empty state/size
+/*  Functionality provided for circular buffer 
+    - Adding data with thread safety
+    - Removing data with thread safety
+    - Checking full/empty state/size
  */
+template <class T>
 class CircularBuffer{
-   int* cbuf;
+   //T* cbuf;
+   std::unique_ptr<T[]> cbuf;
    size_t head;
    size_t tail;
    const size_t max_size;
@@ -24,13 +27,13 @@ class CircularBuffer{
    std::mutex mtx;
 
    public:
-   
-   CircularBuffer(size_t s): cbuf(new int[s]), max_size(s)
+      //CircularBuffer(size_t s): cbuf(new T[s]), max_size(s)
+   CircularBuffer(size_t s): cbuf(std::unique_ptr<T[]>(new T[s])), max_size(s)
    {
       head=0; tail=0; full=false;
    }
 
-   void cbput(int data){
+   void cbput(T data){
       std::lock_guard<std::mutex> lock(mtx);
       cbuf[head]=data;
 
@@ -45,9 +48,9 @@ class CircularBuffer{
       full=(head==tail);
    }
 
-   int cbget(){
+   T cbget(){
       std::lock_guard<std::mutex> lock(mtx);
-      int data=cbuf[tail];
+      T data=cbuf[tail];
       
       if(++tail==max_size)
          tail=0;
@@ -65,7 +68,6 @@ class CircularBuffer{
             else
                 size=max_size+head-tail;
         }
-
         //std::cout<<"cbuf.size="<<size<<std::endl;
         return size;
    }
@@ -95,14 +97,14 @@ class CircularBuffer{
    }
 
    ~CircularBuffer(){
-       if(cbuf)
-          delete[] cbuf;
+       /*if(cbuf)
+          delete[] cbuf;*/ //not needed after declaring with unique pointer
    }
 
 };
 
 int main(int argc, char* argv[]){ /* sample args "44 5 89 7 28 -1 31 4" */
-    CircularBuffer cb(5);
+    CircularBuffer<int> cb(5);
     std::cout<<"\n   AT START..."<<std::endl;
     cb.printCbuf();
     std::cout<<"is it empty? "<<cb.cbempty()<<std::endl;
