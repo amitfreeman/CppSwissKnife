@@ -23,12 +23,12 @@ postorder -> left -  right -root
 
   node(int data){
 	  this->item=data;
-	  left=right=NULL;
+	  left=right=nullptr;
   }
 };
 
 void inorderTraversal(node* root){
-	if(root==NULL)
+	if(root==nullptr)
 		return;
 
 	inorderTraversal(root->left);
@@ -37,7 +37,7 @@ void inorderTraversal(node* root){
 }
 
 void preorderTraversal(node* root){
-	if(root==NULL)
+	if(root==nullptr)
 		return;
 
 	cout<<root->item<<" -> ";
@@ -46,7 +46,7 @@ void preorderTraversal(node* root){
 }
 
 void postorderTraversal(node* root){
-	if(root==NULL)
+	if(root==nullptr)
 		return;
 
 	postorderTraversal(root->left);
@@ -56,12 +56,22 @@ void postorderTraversal(node* root){
 
 /* post order used, as to delete root node at last */
 void deleteTree(node* root){
-	if(root==NULL)
+	if(root==nullptr)
 		return;
 
 	deleteTree(root->left);
 	deleteTree(root->right);
 	delete root;
+}
+
+int calcTreeHeight(node* root){
+	if(!root)
+	   return 0;
+
+	int left=calcTreeHeight(root->left);
+	int right=calcTreeHeight(root->right);
+
+	return max(right, left)+1;
 }
 
 int main() {
@@ -72,6 +82,8 @@ int main() {
 	root->right=new node(9);
 	root->left->left=new node(5);
 	root->left->right=new node(6);
+
+	cout<<"Height of Tree is: "<<calcTreeHeight(root)<<endl;
 
 	cout << "Inorder traversal ";
 	inorderTraversal(root);

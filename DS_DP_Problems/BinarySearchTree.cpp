@@ -15,21 +15,20 @@
 #include <iostream>
 using namespace std;
 
-typedef struct node{
+struct node{
 	int data;
 	node* left;
 	node* right;
 
 	node(int i){
 		this->data=i;
+		left=right=nullptr;
 	}
 };
 
 /* create new node */
 node* newNode(int i){
 	node* newN=new node(i);
-	newN->left=NULL; newN->right=NULL;
-
 	return newN;
 }
 
@@ -59,12 +58,11 @@ void inorderTraversal(node* root){
 }
 
 /* next min value, inorder successor */
-node* minValueNode(node* node) {
-	struct node* current = node;
+node* minValueNode(node* nd) {
+	node* current = nd;
 
-	while(current && node->left!=NULL){
+	while(current && nd->left!=nullptr)
 		current=current->left;
-	}
 
 	return current;
 }
@@ -118,11 +116,21 @@ bool searchTree(node* root, int num){
 		return true;
 }
 
+int calcHeight(node* root){
+	if(!root)
+	   return 0;
+
+	int left=calcHeight(root->left);
+	int right=calcHeight(root->right);
+
+	return max(left, right)+1;
+}
+
 /* Driver program */
 int main() {
 	cout << "---Binary Search TREE---" << endl;
 
-	node* root=NULL; //root node
+	node* root=nullptr; //root node
 	root=insertNode(root, 8);
 	root=insertNode(root, 10);
 	root=insertNode(root, 6);
@@ -132,12 +140,32 @@ int main() {
 	root=insertNode(root, 4);
 	root=insertNode(root, 7);
 
+	cout<<"Height of tree = "<<calcHeight(root)<<endl;
+
 	inorderTraversal(root);
 	searchTree(root, 6)?cout<<"\n---Found 6---\n":cout<<"\n---Not found 6 in tree---\n";
 	cout<<"Deleting 6 from tree"<<endl;
 	deleteNode(root, 6);
 	searchTree(root, 6)?cout<<"\n---Found 6---\n":cout<<"\n---Not found 6 in tree---\n";
 	inorderTraversal(root);
+	cout<<endl;
 
+    cout<<"Inserting new elements"<<endl;
+	root=insertNode(root, 27);
+	root=insertNode(root, 33);
+	root=insertNode(root, 150);
+	root=insertNode(root, -10);
+
+	inorderTraversal(root);
+	cout<<"\nHeight of tree = "<<calcHeight(root)<<endl;
+	searchTree(root, 14)?cout<<"\n---Found 14---\n":cout<<"\n---Not found 14 in tree---\n";
+	deleteNode(root, 33);
+	cout<<"root: "<<root->data<<endl;
+	inorderTraversal(root);
+
+	deleteNode(root, 8);
+	cout<<"\nroot: "<<root->data<<endl;
+	inorderTraversal(root);
+	
 	return 0;
 }
