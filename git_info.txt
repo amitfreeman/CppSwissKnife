@@ -1,7 +1,14 @@
+git key : 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
+
 git flow:
 
  local workspace -->  staging  --> branch local   ---> remote repository
                git add       git commit           git push
+
+
+ https://phoenixnap.com/kb/wp-content/uploads/2021/11/git-commands-cheat-sheet-by-pnap-v2.pdf
+ https://phoenixnap.com/kb/git-commands-cheat-sheet
+ https://phoenixnap.com/kb/how-to-resolve-merge-conflicts-in-git
 
 git basic commands:
 
@@ -43,10 +50,23 @@ git merge  //combine changes from 2 diff branches
 
 git switch  //switch to version, -b option checkout & point to branch
 
+//upload new local branch on remote
+git push --set-upstream origin feature1
+
+------------------------------------------------
 
 Visual Studio code shortcuts:
 
-ctrl + P - command pallete
 
->command
-@
+ctrl + P - command pallete
+  >command   ---run command
+  @          ---list symbols in code  = ctrl+shift+.
+  #          ---global symbol search
+  :          ---go to line number
+
+
+Alt + up/down          --- to move line
+Alt + shift + up/down  ---copy line
+
+ctrl + /  ---line comment
+ctrl + shift + A ---block comment
