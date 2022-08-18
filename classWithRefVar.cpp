@@ -1,5 +1,11 @@
 #include <iostream>
 
+/* Addind comment 
+  Author : Amit Paropkari 
+  Description: This program demonstrates how to add ref, static, const
+            variables to class, & how to initialize them.
+*/
+
 class Test{
   int i;
   int &r;  //reference needs to be initialized in initilizer list
