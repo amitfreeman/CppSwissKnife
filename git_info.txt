@@ -52,6 +52,12 @@ git switch  //switch to version, -b option checkout & point to branch
 //upload new local branch on remote
 git push --set-upstream origin feature1
 
+//create local repo changes patch
+git diff > file.patch
+
+//apply that patch to other repo
+git apply --ignore-space-change file.patch
+
 ------------------------------------------------
 
 Visual Studio code shortcuts:
