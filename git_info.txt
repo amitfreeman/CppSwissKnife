@@ -58,6 +58,10 @@ git diff > file.patch
 //apply that patch to other repo
 git apply --ignore-space-change file.patch
 
+//create new branch from base branch in local
+git checkout -b <new_branch> <existing remote branch>    
+//push that branch to remote repo
+git push origin <new_branch> 
 ------------------------------------------------
 
 Visual Studio code shortcuts:
