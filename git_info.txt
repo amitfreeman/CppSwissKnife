@@ -49,6 +49,11 @@ git merge  //combine changes from 2 diff branches
 
 git switch  //switch to version, -b option checkout & point to branch
 
+//create new branch from base branch in local
+git checkout -b <new_branch> <existing remote branch>    
+//push that branch to remote repo
+git push origin <new_branch> 
+
 //upload new local branch on remote
 git push --set-upstream origin feature1
 
@@ -58,10 +63,9 @@ git diff > file.patch
 //apply that patch to other repo
 git apply --ignore-space-change file.patch
 
-//create new branch from base branch in local
-git checkout -b <new_branch> <existing remote branch>    
-//push that branch to remote repo
-git push origin <new_branch> 
+//revert applied patch
+git apply -R file.patch
+
 ------------------------------------------------
 
 Visual Studio code shortcuts:
