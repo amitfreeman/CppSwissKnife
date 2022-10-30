@@ -1,3 +1,6 @@
+#include <iostream>
+#include <string>
+
 int readFromConfig(const std::string fileToRead)
 
 {
