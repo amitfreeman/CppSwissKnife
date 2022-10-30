@@ -1,0 +1,210 @@
+a#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <sql.h>
+#include <sqlext.h>
+
+#define TRUE 1
+#define FALSE 0
+
+#define CHECK_ERROR(e, s, h, t) ({\
+            if (e!=SQL_SUCCESS && e != SQL_SUCCESS_WITH_INFO) {extract_error(s, h, t); } \
+})
+
+void extract_error(std::string fn, SQLHANDLE handle, SQLSMALLINT type )
+{
+    SQLINTEGER i = 0;
+    SQLINTEGER NativeError;
+    SQLCHAR SQLState[ 7 ];
+    SQLCHAR MessageText[256];
+    SQLSMALLINT TextLength;
+    SQLRETURN ret;
+    std::cout<<"The driver reported the following error "<<fn<<"\n";
+    do
+    {
+        std::cout<<"\nCalling SQLGetDiagRec"<<std::endl;
+        ret = SQLGetDiagRec(type, handle, ++i, SQLState, &NativeError,
+                            MessageText, sizeof(MessageText), &TextLength);
+        std::cout<<"ret: "<<ret<<std::endl;
+        if (SQL_SUCCEEDED(ret)) {
+            /*printf("%s:%ld:%ld:%s\n",
+                        SQLState, (long) i, (long) NativeError, MessageText);*/
+            std::cout<<SQLState<<":"<<i<<":"<<NativeError<<":"<<MessageText<<std::endl;
+        }
+        else if(ret == SQL_ERROR)
+           std::cout<<"\nSQLGetDiagRec returns SQL_ERROR"<<std::endl;
+        else if(ret == SQL_INVALID_HANDLE) 
+           std::cout<<"\nSQLGetDiagRec returns SQL_INVALID_HANDLE"<<std::endl;
+        else if(ret == SQL_NO_DATA)
+           std::cout<<"\nSQLGetDiagRec returns SQL_NO_DATA"<<std::endl;
+    }
+    while( ret == SQL_SUCCESS );
+
+    exit(-1);
+}
+
+
+int main () {
+    SQLHENV  henv  = SQL_NULL_HENV;     // Environment
+    SQLHDBC  hdbc  = SQL_NULL_HDBC;     // Connection handle
+    SQLHSTMT hstmt = SQL_NULL_HSTMT;    // Statement handle
+    SQLRETURN retcode;                  // Return status
+
+    // Allocate environment
+    retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
+    CHECK_ERROR(retcode, "SQLAllocHandle(SQL_HANDLE_ENV)",
+                henv, SQL_HANDLE_ENV);
+
+    // Set ODBC Verion
+    retcode = SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION,
+                                        (SQLPOINTER*)SQL_OV_ODBC3, 0);
+    CHECK_ERROR(retcode, "SQLSetEnvAttr(SQL_ATTR_ODBC_VERSION)",
+                henv, SQL_HANDLE_ENV);
+
+    // Allocate Connection
+    retcode = SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
+    CHECK_ERROR(retcode, "SQLAllocHandle(SQL_HANDLE_DBC)",
+                hdbc, SQL_HANDLE_DBC);
+
+    // Set Login Timeout
+    retcode = SQLSetConnectAttr(hdbc, SQL_LOGIN_TIMEOUT, (SQLPOINTER)180, 0);
+    CHECK_ERROR(retcode, "SQLSetConnectAttr(SQL_LOGIN_TIMEOUT)",
+                hdbc, SQL_HANDLE_DBC);
+
+    retcode = SQLSetConnectAttr(hdbc, SQL_ATTR_CONNECTION_TIMEOUT, (SQLPOINTER)3, 0);
+    CHECK_ERROR(retcode, "SQLSetConnectAttr(SQL_ATTR_CONNECTION_TIMEOUT)",
+                hdbc, SQL_HANDLE_DBC);
+
+    // Set Auto Commit
+    retcode = SQLSetConnectAttr(hdbc, SQL_ATTR_AUTOCOMMIT,
+                                       (SQLPOINTER)FALSE, 0);
+    CHECK_ERROR(retcode, "SQLSetConnectAttr(SQL_ATTR_AUTOCOMMIT)", 
+                hdbc, SQL_HANDLE_DBC); 
+
+
+    // Connect to DSN
+    //char mm_pwd[80];
+    //sprintf(mm_pwd,"%s",argv[1]);
+    retcode = SQLDriverConnect(hdbc, NULL, (SQLCHAR*) "DSN=db-amit-auth;",
+                                     SQL_NTS,(SQLCHAR*) NULL, 0, NULL, SQL_DRIVER_COMPLETE);
+
+    CHECK_ERROR(retcode, "SQLDriverConnect()",
+                hdbc, SQL_HANDLE_DBC);
+
+    // Allocate Statement Handle
+    retcode = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &hstmt);
+    CHECK_ERROR(retcode, "SQLAllocHandle(SQL_HANDLE_STMT)",
+                    hstmt, SQL_HANDLE_STMT);
+
+#define ARRAY_SIZE 2
+
+    SQLULEN cur_row = 0;
+    SQLLEN row_cnt = 0;
+    char* nrow_ptr = 0;
+
+    nrow_ptr += ARRAY_SIZE;
+    SQLUSMALLINT* row_status = (SQLUSMALLINT*)malloc(ARRAY_SIZE * sizeof(SQLUSMALLINT ));
+    SQLSetStmtAttr( hstmt, SQL_ATTR_PARAM_BIND_TYPE, (void *)(SQLINTEGER)SQL_PARAM_BIND_BY_COLUMN, 0);
+    SQLSetStmtAttr( hstmt, SQL_ATTR_PARAMSET_SIZE, (void *)nrow_ptr, 0);
+    SQLSetStmtAttr( hstmt, SQL_ATTR_PARAMS_PROCESSED_PTR, (void *)&cur_row, 0);
+    SQLSetStmtAttr( hstmt, SQL_ATTR_PARAM_STATUS_PTR, (void *)row_status, 0 );
+
+    int id[ARRAY_SIZE];
+    SQLLEN cb_id[ARRAY_SIZE];
+    char name[ARRAY_SIZE][20];
+    SQLLEN cb_name[ARRAY_SIZE];
+    int i;
+
+    for( i = 0; i < ARRAY_SIZE; i++ )
+    {
+        id[i] = i + 10;
+        cb_id[i] = 0;
+
+        memset(name[i], 0, 20);
+        strcpy(name[i], "mmmm");
+        cb_name[i] = strlen(name[i]);
+    }
+
+    SQLUSMALLINT bindIdx = 1;
+
+    /* bind param  */
+
+    retcode = SQLBindParameter(hstmt, bindIdx++, SQL_PARAM_INPUT,
+                SQL_C_LONG,   /* value type */
+                SQL_INTEGER,  /* param type */
+                0,              /* column size */
+                0,                    /* dec digits */
+                id,               /* param value ptr */
+                sizeof(id),                  /* buffer len */
+                cb_id              /* StrLen_or_IndPtr */);
+    CHECK_ERROR(retcode, "SQLBindParameter()", hstmt, SQL_HANDLE_STMT);
+
+    retcode = SQLBindParameter(hstmt, bindIdx++, SQL_PARAM_INPUT,
+                    SQL_C_CHAR,   /* value type */
+                    SQL_CHAR,  /* param type */
+                    20,              /* column size */
+                    0,                    /* dec digits */
+                    name,               /* param value ptr */
+                    20,                  /* buffer len */
+                    cb_name              /* StrLen_or_IndPtr */);
+    CHECK_ERROR(retcode, "SQLBindParameter()", hstmt, SQL_HANDLE_STMT);
+
+    // Prepare Statement
+    retcode = SQLPrepare(hstmt, (SQLCHAR*) "insert into demo values ( ?, ? )", SQL_NTS);
+    //retcode = SQLPrepare(hstmt, (SQLCHAR*) "update demo set name = ? where id = ?", SQL_NTS);
+    //retcode = SQLPrepare(hstmt, (SQLCHAR*) "delete from demo where id = ?", SQL_NTS);
+    CHECK_ERROR(retcode, "SQLPrepare(insert)", hstmt, SQL_HANDLE_STMT);
+
+    retcode = SQLExecute(hstmt);
+    if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+    {
+        //printf ("Execution status : ok\n");
+        std::cout<<"Execution status : ok"<<std::endl;
+    }
+    else
+    {
+        CHECK_ERROR(retcode, "SQLExecute()", hstmt, SQL_HANDLE_STMT);
+    }
+
+
+    //printf ("retcode: %d\n", retcode);
+    std::cout<<"retcode: "<<retcode<<std::endl;
+
+    do
+    {
+        retcode = SQLRowCount( hstmt, &row_cnt );
+        CHECK_ERROR(retcode, "SQLRowCount()", hstmt, SQL_HANDLE_STMT);
+        //printf ("row_cnt: %d\n", row_cnt);
+        std::cout<<"row_cnt: "<<row_cnt<<std::endl;
+    }while (SQLMoreResults(hstmt) == SQL_SUCCESS );
+
+    // Free Statement handles
+    if (hstmt != SQL_NULL_HSTMT)
+    {
+            SQLFreeStmt( hstmt, SQL_CLOSE );
+            SQLFreeStmt( hstmt, SQL_UNBIND);
+            SQLFreeStmt( hstmt, SQL_RESET_PARAMS);
+            SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+    }
+
+    retcode = SQLEndTran( SQL_HANDLE_DBC , hdbc, SQL_COMMIT );
+    CHECK_ERROR(retcode, "SQLEndTran(SQL_COMMIT)",
+                    hdbc, SQL_HANDLE_DBC);
+
+exit:
+
+    //printf ("\nComplete.\n");
+    std::cout<<"\nn--Complete.--"<<std::endl;
+
+    // Connection
+    if (hdbc != SQL_NULL_HDBC) {
+        SQLDisconnect(hdbc);
+        SQLFreeHandle(SQL_HANDLE_DBC, hdbc);
+    }
+
+    // Environment
+    if (henv != SQL_NULL_HENV)
+        SQLFreeHandle(SQL_HANDLE_ENV, henv);
+
+    return 0;
+}
