@@ -1,5 +1,8 @@
 #include "OdbcDriver.h"
 
+/* make this class singleton */
+OdbcDriver* OdbcDriver::instance = nullptr;
+
 int OdbcDriver::init()
 {
     SQLHENV henv = SQL_NULL_HENV;    // Environment handle
@@ -233,7 +236,7 @@ int OdbcDriver::executeInsert(int& id)
     return SUCCESS;
 }
 
-int OdbcDriver::executeSelect(std::string& sql_stmt, std::string& o_result)
+int OdbcDriver::executeSelect(const std::string& sql_stmt, std::string& o_result)
 {
     SQLRETURN retcode;
     SQLLEN output_len = 0;
@@ -273,4 +276,20 @@ int OdbcDriver::executeSelect(std::string& sql_stmt, std::string& o_result)
     std::cout<<"    Info: Result fetched = "<<o_result<<std::endl;
 
     return SUCCESS;
+}
+
+/* make OdbcDriver singleton class */
+OdbcDriver* OdbcDriver::connect(const std::string& idsn){
+    if(!instance)
+        instance = new OdbcDriver(idsn);
+
+    return instance;
+}
+
+int OdbcDriver::disconnect(){
+    if(instance)
+        delete instance;
+
+    instance = nullptr;
+    return 0;
 }

@@ -16,6 +16,7 @@ class OdbcDriver{
     SQLHDBC  hdbc;     // Connection handle
     SQLHSTMT hstmt;    // Statement handle
     std::string dsn;
+    static OdbcDriver* instance;
 
     int check_error(SQLRETURN retcode, 
                std::string fn, 
@@ -24,17 +25,26 @@ class OdbcDriver{
     
     int init();
 
+    OdbcDriver(const std::string& idsn);
+
+    OdbcDriver(const OdbcDriver& obj) = delete;
+   
+    OdbcDriver operator=(const OdbcDriver& obj) = delete;
+
     int freeStmtHandle();
 
     int allocateStmtHandle();
 
+    ~OdbcDriver();
+
 public:
 
-   OdbcDriver(const std::string& idsn);
+   static OdbcDriver* connect(const std::string& idsn);
 
    int executeInsert(int& id);
 
-   int executeSelect(std::string& sql_stmt, std::string& o_result);
+   int executeSelect(const std::string& sql_stmt, std::string& o_result);
 
-   ~OdbcDriver();
+   int disconnect();
+
 };

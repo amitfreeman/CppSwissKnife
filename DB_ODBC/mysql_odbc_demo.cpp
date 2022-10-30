@@ -25,12 +25,12 @@ int main () {
     std::cout<<"\n--- Starting, making DB connection --"<<std::endl;
     
     //create ODBC driver and connect using DSN = db-amit-auth
-    OdbcDriver d("db-amit-auth");
+    OdbcDriver* d=OdbcDriver::connect("db-amit-auth");
 
     // get max ID present in demo table
     std::cout<<"\n--- Select max id (pk) from demo table --"<<std::endl;
     sql_select = "select max(id) from demo";
-    rc=d.executeSelect(sql_select, max_id_str);
+    rc=d->executeSelect(sql_select, max_id_str);
     std::cout<<"\n--- rc = "<<rc<<std::endl;
     if(!rc){
       std::cout<<"\n--- select failed! ---"<<std::endl;
@@ -41,12 +41,14 @@ int main () {
  
     // insert new row with max id +1
     std::cout<<"\n--- Inserting row into demo table with new id = "<<++max_id<<" --"<<std::endl;   
-    rc=d.executeInsert(max_id);
+    rc=d->executeInsert(max_id);
     std::cout<<"\n--- rc = "<<rc<<std::endl;
     if(!rc){
       std::cout<<"\n--- insert failed! ---"<<std::endl;
       return -1;
     }
+
+    d->disconnect();
 
     std::cout<<"\n--- Finished successfully ---"<<std::endl;
     return 0;
