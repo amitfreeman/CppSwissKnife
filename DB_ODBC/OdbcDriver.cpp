@@ -226,12 +226,12 @@ int OdbcDriver::executeInsert(int& id)
 
     retcode = SQLEndTran(SQL_HANDLE_DBC, hdbc, SQL_COMMIT);
 
-    // Free Statement handles
-    freeStmtHandle();
-
     if (!check_error(retcode, "SQLEndTran(SQL_COMMIT)",
                      hstmt, SQL_HANDLE_STMT))
         return FAIL;
+
+    // Free Statement handles
+    freeStmtHandle();
 
     return SUCCESS;
 }
@@ -274,6 +274,9 @@ int OdbcDriver::executeSelect(const std::string& sql_stmt, std::string& o_result
     //std::cout<<"    Info: Result fetched = "<<max_id<<std::endl;
     o_result = std::string(buffer);
     std::cout<<"    Info: Result fetched = "<<o_result<<std::endl;
+
+    // Free Statement handles
+    freeStmtHandle();
 
     return SUCCESS;
 }
