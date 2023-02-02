@@ -381,6 +381,16 @@ class subclass_name : access_mode base_class1, access_mode base_class2, ....
 	  string to c style string (char*)
 	  https://www.geeksforgeeks.org/convert-string-char-array-cpp/
 	  https://www.geeksforgeeks.org/string-find-in-cpp/
+	  
+/* Method 4:  int to string other way when to_string not available in older C++ versions */
+
+    int i=112;
+        
+    char str1[15];
+    sprintf(str1, "%d", i);
+    string str2=str1;
+    cout<<str2<<endl;
+    
 		
 9) convert string number to int number w/o using inbuilt functions
 
