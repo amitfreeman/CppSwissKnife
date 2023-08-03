@@ -37,7 +37,7 @@ int main () {
       return -1;
     }
 
-    max_id=std::stoi(max_id_str);
+    (max_id_str.length() > 0 ) ? max_id=std::stoi(max_id_str):max_id=0;
  
     // insert new row with max id +1
     std::cout<<"\n--- Inserting row into demo table with new id = "<<++max_id<<" --"<<std::endl;   
