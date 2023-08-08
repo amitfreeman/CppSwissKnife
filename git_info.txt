@@ -66,6 +66,9 @@ git apply --ignore-space-change file.patch
 //revert applied patch
 git apply -R file.patch
 
+//remove file from staged area
+git reset HEAD -- <file>
+
 ------------------------------------------------
 
 Visual Studio code shortcuts:
