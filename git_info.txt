@@ -69,6 +69,14 @@ git apply -R file.patch
 //remove file from staged area
 git reset HEAD -- <file>
 
+# creating and checking out new branch
+git checkout -b ＜new-branch-name＞ # format ora_SPO_<>_yourname
+#push new branch to remote
+git push origin -u < new-branch-name >
+#merge change 
+git checkout <branch - to -merge in>
+git  merge <new - branch>
+
 ------------------------------------------------
 
 Visual Studio code shortcuts:
